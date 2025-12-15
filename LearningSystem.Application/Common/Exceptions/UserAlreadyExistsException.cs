@@ -1,4 +1,4 @@
-﻿namespace LearningSystem.Application.Exceptions;
+﻿namespace LearningSystem.Application.Common.Exceptions;
 public class UserAlreadyExistsException : Exception
 {
     public UserAlreadyExistsException(string message)

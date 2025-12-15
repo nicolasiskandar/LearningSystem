@@ -1,13 +1,14 @@
-﻿using LearningSystem.Application.Dtos.Users;
+﻿using LearningSystem.Application.Commands.Users;
+using LearningSystem.Application.Results.Users;
 
 namespace LearningSystem.Application.Services.Users
 {
     public interface IUserService
     {
-        UserDto GetUserById(int id);
-        ICollection<UserDto> GetUsers();
-        UserDto AddUser(CreateUserDto dto);
-        UserDto UpdateUser(int id, UpdateUserDto dto);
+        UserResult GetUserById(int id);
+        ICollection<UserResult> GetUsers();
+        UserResult AddUser(CreateUserCommand command);
+        UserResult UpdateUser(UpdateUserCommand command);
         void DeleteUser(int id);
     }
 }

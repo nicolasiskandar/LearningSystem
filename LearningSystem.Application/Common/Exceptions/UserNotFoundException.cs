@@ -1,4 +1,4 @@
-﻿namespace LearningSystem.Application.Exceptions;
+﻿namespace LearningSystem.Application.Common.Exceptions;
 public class UserNotFoundException : Exception
 {
     public UserNotFoundException(string message)

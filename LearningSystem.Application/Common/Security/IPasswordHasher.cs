@@ -1,4 +1,4 @@
-﻿namespace LearningSystem.Application.Security;
+﻿namespace LearningSystem.Application.Common.Security;
 
 public interface IPasswordHasher
 {

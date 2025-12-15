@@ -1,11 +1,16 @@
-﻿using LearningSystem.Application.Security;
+﻿using LearningSystem.Application.Common.Security;
 using Microsoft.AspNetCore.Identity;
 
 namespace LearningSystem.Infrastructure.Security;
 
 public class PasswordHasher : IPasswordHasher
 {
-    private readonly PasswordHasher<object> _hasher = new();
+    private readonly PasswordHasher<object> _hasher;
+
+    public PasswordHasher(PasswordHasher<object> hasher)
+    {
+        _hasher = hasher;
+    }
 
     public string HashPassword(string password)
     {

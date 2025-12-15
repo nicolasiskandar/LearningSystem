@@ -1,4 +1,4 @@
-﻿using LearningSystem.Application.Exceptions;
+﻿using LearningSystem.Application.Common.Exceptions;
 using System.Net;
 using System.Text.Json;
 

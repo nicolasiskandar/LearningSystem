@@ -1,4 +1,5 @@
-﻿using LearningSystem.Application.Dtos.Users;
+﻿using LearningSystem.Api.Dtos.Users;
+using LearningSystem.Application.Commands.Users;
 using LearningSystem.Application.Services.Users;
 using Microsoft.AspNetCore.Mvc;
 
@@ -33,7 +34,14 @@ public class UsersController : ControllerBase
     [HttpPost]
     public ActionResult<UserDto> AddUser([FromBody] CreateUserDto dto)
     {
-        var createdUser = _userService.AddUser(dto);
+        var command = new CreateUserCommand(
+            dto.FullName,
+            dto.Email,
+            dto.Password
+        );
+
+        var createdUser = _userService.AddUser(command);
+
         return CreatedAtAction(nameof(GetUserById), new { id = createdUser.Id }, createdUser);
     }
 
@@ -41,7 +49,13 @@ public class UsersController : ControllerBase
     public ActionResult<UserDto> UpdateUser(int id, [FromBody] UpdateUserDto dto)
     {
 
-        var updatedUser = _userService.UpdateUser(id, dto);
+        var command = new UpdateUserCommand(
+            id,
+            dto.FullName,
+            dto.Email
+        );
+
+        var updatedUser = _userService.UpdateUser(command);
         return Ok(updatedUser);
     }
 

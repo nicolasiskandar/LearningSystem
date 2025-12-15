@@ -1,6 +1,6 @@
-﻿namespace LearningSystem.Application.Dtos.Users;
+﻿namespace LearningSystem.Application.Results.Users;
 
-public class UserDto
+public class UserResult
 {
     public int Id { get; set; }
     public string FullName { get; set; } = null!;

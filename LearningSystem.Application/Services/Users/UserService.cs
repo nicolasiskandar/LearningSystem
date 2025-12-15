@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
-using LearningSystem.Application.Dtos.Users;
-using LearningSystem.Application.Exceptions;
+using LearningSystem.Application.Common.Security;
+using LearningSystem.Application.Common.Exceptions;
 using LearningSystem.Application.Persistence;
-using LearningSystem.Application.Security;
 using LearningSystem.Domain.Entities;
+using LearningSystem.Application.Commands.Users;
+using LearningSystem.Application.Results.Users;
 
 namespace LearningSystem.Application.Services.Users;
 
@@ -20,52 +21,52 @@ public class UserService : IUserService
         _passwordHasher = passwordHasher;
     }
 
-    public UserDto GetUserById(int id)
+    public UserResult GetUserById(int id)
     {
         var user = _userRepository.GetUserById(id);
         if (user == null)
             throw new UserNotFoundException($"User with ID {id} does not exist.");
         
-        return _mapper.Map<UserDto>(user);
+        return _mapper.Map<UserResult>(user);
     }
 
-    public ICollection<UserDto> GetUsers()
+    public ICollection<UserResult> GetUsers()
     {
         var users = _userRepository.GetUsers();
-        return _mapper.Map<ICollection<UserDto>>(users);
+        return _mapper.Map<ICollection<UserResult>>(users);
     }
 
-    public UserDto AddUser(CreateUserDto dto)
+    public UserResult AddUser(CreateUserCommand command)
     {
-        var user = _userRepository.GetUserByEmail(dto.Email);
+        var user = _userRepository.GetUserByEmail(command.Email);
 
         if (user != null)
-            throw new UserAlreadyExistsException($"User with email {dto.Email} already exists.");
+            throw new UserAlreadyExistsException($"User with email {command.Email} already exists.");
 
-        user = _mapper.Map<User>(dto);
-        user.HashedPassword = _passwordHasher.HashPassword(dto.Password);
+        user = _mapper.Map<User>(command);
+        user.HashedPassword = _passwordHasher.HashPassword(command.Password);
         user.CreatedAt = DateTime.UtcNow;
         user.RoleId = 1; // Student by default
 
         _userRepository.AddUser(user);
 
         var createdUser = _userRepository.GetUserById(user.Id);
-        return _mapper.Map<UserDto>(createdUser!);
+        return _mapper.Map<UserResult>(createdUser!);
     }
 
-    public UserDto UpdateUser(int id, UpdateUserDto dto)
+    public UserResult UpdateUser(UpdateUserCommand command)
     {
-        var user = _userRepository.GetUserById(id);
+        var user = _userRepository.GetUserById(command.Id);
 
         if (user == null)
-            throw new UserNotFoundException($"User with ID {id} does not exist.");
-        if (user.Email == dto.Email)
-            throw new UserAlreadyExistsException($"User with email {dto.Email} already exists.");
+            throw new UserNotFoundException($"User with ID {command.Id} does not exist.");
+        if (UserWithEmailAlreadyExists(user, command))
+            throw new UserAlreadyExistsException($"User with email {command.Email} already exists.");
 
-        _mapper.Map(dto, user);
+        _mapper.Map(command, user);
         _userRepository.UpdateUser(user);
 
-        return _mapper.Map<UserDto>(user);
+        return _mapper.Map<UserResult>(user);
     }
 
     public void DeleteUser(int id)
@@ -75,5 +76,10 @@ public class UserService : IUserService
             throw new UserNotFoundException($"User with ID {id} does not exist.");
 
         _userRepository.DeleteUser(user);
+    }
+
+    private bool UserWithEmailAlreadyExists(User user, UpdateUserCommand command)
+    {
+        return user.Email != command.Email && _userRepository.GetUserByEmail(user.Email) != null;
     }
 }
