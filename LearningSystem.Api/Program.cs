@@ -21,6 +21,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services
+    .AddApi()
     .AddApplication()
     .AddInfrastructure(builder.Configuration);
 

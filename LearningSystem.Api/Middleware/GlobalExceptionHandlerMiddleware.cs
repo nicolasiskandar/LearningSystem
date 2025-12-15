@@ -34,10 +34,10 @@ public class GlobalExceptionHandlerMiddleware
 
         switch (exception)
         {
-            case UserNotFoundException:
+            case NotFoundException:
                 status = HttpStatusCode.NotFound;
                 break;
-            case UserAlreadyExistsException:
+            case AlreadyExistsException:
                 status = HttpStatusCode.BadRequest;
                 break;
             default:

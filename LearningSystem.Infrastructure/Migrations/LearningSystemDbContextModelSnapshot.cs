@@ -57,8 +57,8 @@ namespace LearningSystem.Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.HasKey("Id");
 
@@ -111,10 +111,8 @@ namespace LearningSystem.Infrastructure.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int>("CreatedBy")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CreatedByNavigationId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("CreatedBy");
 
                     b.Property<string>("Difficulty")
                         .IsRequired()
@@ -138,11 +136,15 @@ namespace LearningSystem.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
 
-                    b.HasIndex("CreatedByNavigationId");
+                    b.HasIndex("CreatedBy");
 
                     b.ToTable("Courses");
                 });
@@ -524,8 +526,8 @@ namespace LearningSystem.Infrastructure.Migrations
 
                     b.HasOne("LearningSystem.Domain.Entities.User", "CreatedByNavigation")
                         .WithMany("Courses")
-                        .HasForeignKey("CreatedByNavigationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("CreatedBy")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Category");

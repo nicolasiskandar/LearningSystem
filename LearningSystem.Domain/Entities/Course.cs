@@ -4,6 +4,8 @@ public partial class Course
 {
     public int Id { get; set; }
 
+    public string Title { get; set; } = null!;
+
     public string ShortDescription { get; set; } = null!;
 
     public string LongDescription { get; set; } = null!;

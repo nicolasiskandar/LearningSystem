@@ -1,5 +1,5 @@
 ﻿using LearningSystem.Api.Dtos.Users;
-using LearningSystem.Application.Commands.Users;
+using LearningSystem.Api.Mappers.Users;
 using LearningSystem.Application.Services.Users;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,35 +10,35 @@ namespace LearningSystem.Api.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;
+    private readonly IUserMapper _userMapper;
 
-    public UsersController(IUserService userService)
+    public UsersController(IUserService userService, IUserMapper userMapper)
     {
         _userService = userService;
+        _userMapper = userMapper;
     }
 
     [HttpGet]
     public ActionResult<ICollection<UserDto>> GetUsers()
     {
         var users = _userService.GetUsers();
-        return Ok(users);
+        var dtos = _userMapper.Map(users);
+        return Ok(dtos);
     }
 
     [HttpGet("{id:int}")]
     public ActionResult<UserDto> GetUserById(int id)
     {
         var user = _userService.GetUserById(id);
-        return Ok(user);
+        var dto = _userMapper.Map(user);
+        return Ok(dto);
 
     }
 
     [HttpPost]
     public ActionResult<UserDto> AddUser([FromBody] CreateUserDto dto)
     {
-        var command = new CreateUserCommand(
-            dto.FullName,
-            dto.Email,
-            dto.Password
-        );
+        var command = _userMapper.Map(dto);
 
         var createdUser = _userService.AddUser(command);
 
@@ -48,12 +48,7 @@ public class UsersController : ControllerBase
     [HttpPut("{id:int}")]
     public ActionResult<UserDto> UpdateUser(int id, [FromBody] UpdateUserDto dto)
     {
-
-        var command = new UpdateUserCommand(
-            id,
-            dto.FullName,
-            dto.Email
-        );
+        var command = _userMapper.Map(dto, id);
 
         var updatedUser = _userService.UpdateUser(command);
         return Ok(updatedUser);

@@ -1,15 +1,21 @@
-﻿using LearningSystem.Domain.Entities;
+using LearningSystem.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace LearningSystem.Infrastructure.Persistence.Configuration;
-
-public class CategoryConfiguration : IEntityTypeConfiguration<Category>
+namespace LearningSystem.Infrastructure.Persistence.Configuration
 {
-    public void Configure(EntityTypeBuilder<Category> builder)
+    public class CategoryConfiguration : IEntityTypeConfiguration<Category>
     {
-        builder.HasKey(c => c.Id);
-        builder.Property(c => c.Name).HasMaxLength(100).IsRequired();
-        builder.HasIndex(c => c.Name).IsUnique();
+        public void Configure(EntityTypeBuilder<Category> builder)
+        {
+            builder.HasKey(c => c.Id);
+
+            builder.Property(c => c.Name)
+                .IsRequired()
+                .HasMaxLength(50);
+
+            builder.HasIndex(c => c.Name)
+                .IsUnique();
+        }
     }
 }
