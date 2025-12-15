@@ -17,7 +17,9 @@ public static class DependencyInjection
     {
         services.AddDbContext<LearningSystemDbContext>(options =>
            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+        
         services.AddScoped<IUserRepository, UserRepository>();
+
         services.AddSingleton<PasswordHasher<object>>();
         services.AddScoped<IPasswordHasher, PasswordHasher>();
 

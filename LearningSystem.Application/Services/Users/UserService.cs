@@ -60,7 +60,7 @@ public class UserService : IUserService
 
         if (user == null)
             throw new UserNotFoundException($"User with ID {command.Id} does not exist.");
-        if (UserWithEmailAlreadyExists(user, command))
+        if (UserWithEmailAlreadyExists(command))
             throw new UserAlreadyExistsException($"User with email {command.Email} already exists.");
 
         _mapper.Map(command, user);
@@ -78,8 +78,9 @@ public class UserService : IUserService
         _userRepository.DeleteUser(user);
     }
 
-    private bool UserWithEmailAlreadyExists(User user, UpdateUserCommand command)
+    private bool UserWithEmailAlreadyExists(UpdateUserCommand command)
     {
-        return user.Email != command.Email && _userRepository.GetUserByEmail(user.Email) != null;
+        var existingUser = _userRepository.GetUserByEmail(command.Email);
+        return existingUser != null && existingUser.Id != command.Id;
     }
 }
