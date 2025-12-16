@@ -1,4 +1,5 @@
 ﻿using LearningSystem.Domain.Entities;
+using LearningSystem.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,9 +14,12 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
         builder.HasIndex(r => r.Name).IsUnique();
 
         builder.HasData(
-            new Role { Id = 1, Name = "Student" },
-            new Role { Id = 2, Name = "Instructor" },
-            new Role { Id = 3, Name = "SuperAdmin" }
+            Enum.GetValues<Roles>()
+                .Select(r => new Role
+                {
+                    Id = (int)r,
+                    Name = r.ToString()
+                })
         );
     }
 }

@@ -5,6 +5,7 @@ using LearningSystem.Application.Common.Exceptions.Users;
 using LearningSystem.Application.Results.Courses;
 using LearningSystem.Application.Mappers.Courses;
 using LearningSystem.Application.Common.Exceptions.Categories;
+using LearningSystem.Domain.Enums;
 
 namespace LearningSystem.Application.Services.Courses;
 
@@ -47,6 +48,12 @@ public class CourseService : ICourseService
         var creator = _userRepository.GetUserById(command.CreatedBy);
         if (creator == null)
             throw new UserNotFoundException(command.CreatedBy);
+
+        if (creator.RoleId != (int)Roles.Instructor)
+        {
+            creator.RoleId = (int)Roles.Instructor;
+            _userRepository.UpdateUser(creator);
+        }
 
         var category = _categoryRepository.GetCategoryById(command.CategoryId);
         if (category == null)

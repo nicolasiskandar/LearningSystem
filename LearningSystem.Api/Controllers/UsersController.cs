@@ -1,4 +1,5 @@
-﻿using LearningSystem.Api.Dtos.Users;
+﻿using LearningSystem.Api.Dtos.Courses;
+using LearningSystem.Api.Dtos.Users;
 using LearningSystem.Api.Mappers.Users;
 using LearningSystem.Application.Services.Users;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +33,20 @@ public class UsersController : ControllerBase
         var user = _userService.GetUserById(id);
         var dto = _userMapper.Map(user);
         return Ok(dto);
+    }
 
+    [HttpGet("{id:int}/courses/created")]
+    public ActionResult<ICollection<CourseDto>> GetCoursesCreatedByUser(int id)
+    {
+        var courses = _userService.GetCoursesCreatedByUser(id);
+        return Ok(courses);
+    }
+
+    [HttpGet("{id:int}/courses/enrolled")]
+    public ActionResult<ICollection<CourseDto>> GetCoursesEnrolledByUser(int id)
+    {
+        var courses = _userService.GetCoursesEnrolledByUser(id);
+        return Ok(courses);
     }
 
     [HttpPost]

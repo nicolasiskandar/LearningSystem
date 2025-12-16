@@ -45,6 +45,21 @@ public class UserRepository : IUserRepository
                        .ToList();
     }
 
+    public User? GetUserByIdWithCourses(int id)
+    {
+        return _context.Users
+            .Include(u => u.Courses)
+            .FirstOrDefault(u => u.Id == id);
+    }
+
+    public User? GetUserByIdWithEnrolledCourses(int id)
+    {
+        return _context.Users
+            .Include(u => u.UserCourses)
+                .ThenInclude(uc => uc.Course)
+            .FirstOrDefault(u => u.Id == id);
+    }
+
     public void UpdateUser(User user)
     {
         _context.Users.Update(user);

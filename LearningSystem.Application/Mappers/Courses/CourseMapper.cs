@@ -1,7 +1,6 @@
 using LearningSystem.Application.Commands.Courses;
 using LearningSystem.Application.Results.Courses;
 using LearningSystem.Domain.Entities;
-using System.Reflection;
 
 namespace LearningSystem.Application.Mappers.Courses;
 
