@@ -13,56 +13,53 @@ public class UserRepository : IUserRepository
         _context = context;
     }
 
-    public void AddUser(User user)
+    public async Task AddUserAsync(User user)
     {
-        _context.Users.Add(user);
-        _context.SaveChanges();
+        await _context.Users.AddAsync(user);
+        await _context.SaveChangesAsync();
     }
 
-    public void DeleteUser(User user)
+    public async Task DeleteUserAsync(User user)
     {
         _context.Users.Remove(user);
-        _context.SaveChanges();
-    }
-    public User? GetUserByEmail(string email)
-    {
-        return _context.Users
-                       .Include(u => u.Role)
-                       .FirstOrDefault(u => u.Email == email);
+        await _context.SaveChangesAsync();
     }
 
-    public User? GetUserById(int id)
+    public async Task<User?> GetUserByEmailAsync(string email)
     {
-        return _context.Users
-                       .Include(u => u.Role)
-                       .FirstOrDefault(u => u.Id == id);
+        return await _context.Users
+            .FirstOrDefaultAsync(u => u.Email == email);
     }
 
-    public ICollection<User> GetUsers()
+    public async Task<User?> GetUserByIdAsync(int id)
     {
-        return _context.Users
-                       .Include(u => u.Role)
-                       .ToList();
+        return await _context.Users
+            .FirstOrDefaultAsync(u => u.Id == id);
     }
 
-    public User? GetUserByIdWithCourses(int id)
+    public async Task<ICollection<User>> GetUsersAsync()
     {
-        return _context.Users
+        return await _context.Users.ToListAsync();
+    }
+
+    public async Task<User?> GetUserByIdWithCoursesAsync(int id)
+    {
+        return await _context.Users
             .Include(u => u.Courses)
-            .FirstOrDefault(u => u.Id == id);
+            .FirstOrDefaultAsync(u => u.Id == id);
     }
 
-    public User? GetUserByIdWithEnrolledCourses(int id)
+    public async Task<User?> GetUserByIdWithEnrolledCoursesAsync(int id)
     {
-        return _context.Users
+        return await _context.Users
             .Include(u => u.UserCourses)
                 .ThenInclude(uc => uc.Course)
-            .FirstOrDefault(u => u.Id == id);
+            .FirstOrDefaultAsync(u => u.Id == id);
     }
 
-    public void UpdateUser(User user)
+    public async Task UpdateUserAsync(User user)
     {
         _context.Users.Update(user);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 }

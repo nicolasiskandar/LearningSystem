@@ -4,12 +4,12 @@ namespace LearningSystem.Application.Persistence;
 
 public interface IUserRepository
 {
-    User? GetUserById(int id);
-    User? GetUserByEmail(string email);
-    ICollection<User> GetUsers();
-    User? GetUserByIdWithCourses(int id);
-    User? GetUserByIdWithEnrolledCourses(int id);
-    void AddUser(User user);
-    void UpdateUser(User user);
-    void DeleteUser(User user);
+    Task<User?> GetUserByIdAsync(int id);
+    Task<User?> GetUserByEmailAsync(string email);
+    Task<ICollection<User>> GetUsersAsync();
+    Task<User?> GetUserByIdWithCoursesAsync(int id);
+    Task<User?> GetUserByIdWithEnrolledCoursesAsync(int id);
+    Task AddUserAsync(User user);
+    Task UpdateUserAsync(User user);
+    Task DeleteUserAsync(User user);
 }

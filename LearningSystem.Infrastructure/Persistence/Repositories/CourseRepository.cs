@@ -1,5 +1,6 @@
 using LearningSystem.Application.Persistence;
 using LearningSystem.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace LearningSystem.Infrastructure.Persistence.Repositories;
 
@@ -12,31 +13,54 @@ public class CourseRepository : ICourseRepository
         _context = context;
     }
 
-    public void AddCourse(Course course)
+    public async Task AddCourseAsync(Course course)
     {
-        _context.Courses.Add(course);
-        _context.SaveChanges();
+        await _context.Courses.AddAsync(course);
+        await _context.SaveChangesAsync();
     }
 
-    public void RemoveCourse(Course course)
+    public async Task RemoveCourseAsync(Course course)
     {
         _context.Courses.Remove(course);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
     }
 
-    public ICollection<Course> GetAllCourses()
+    public async Task<ICollection<Course>> GetAllCoursesAsync()
     {
-        return _context.Courses.ToList();
+        return await _context.Courses
+                         .Include(c => c.Category)
+                         .ToListAsync();
     }
 
-    public Course? GetCourseById(int id)
+    public async Task<Course?> GetCourseByIdAsync(int id)
     {
-        return _context.Courses.FirstOrDefault(c => c.Id == id);
+        return await _context.Courses
+                         .Include(c => c.Category)
+                         .FirstOrDefaultAsync(c => c.Id == id);
     }
 
-    public void UpdateCourse(Course course)
+    public async Task UpdateCourseAsync(Course course)
     {
         _context.Courses.Update(course);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<ICollection<Course>> GetCoursesByUserIdAsync(int userId)
+    {
+        return await _context.Courses
+                             .Include(c => c.Category)
+                             .Where(c => c.CreatedBy == userId)
+                             .ToListAsync();
+
+    }
+
+    public async Task<IEnumerable<Course>> GetCoursesEnrolledByUserAsync(int userId)
+    {
+        return await _context.UserCourses
+                             .Where(uc => uc.UserId == userId)
+                             .Include(uc => uc.Course)
+                                 .ThenInclude(c => c.Category)
+                             .Select(uc => uc.Course)
+                             .ToListAsync();
     }
 }

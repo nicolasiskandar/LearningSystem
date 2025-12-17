@@ -10,15 +10,19 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
     {
         builder.HasKey(u => u.Id);
 
-        builder.Property(u => u.FullName).HasMaxLength(100).IsRequired();
-        builder.Property(u => u.Email).HasMaxLength(255).IsRequired();
-        builder.HasIndex(u => u.Email).IsUnique();
-        builder.Property(u => u.HashedPassword).HasMaxLength(128).IsRequired();
         builder.Property(u => u.CreatedAt).IsRequired();
 
-        builder.HasOne(u => u.Role)
-               .WithMany(r => r.Users)
-               .HasForeignKey(u => u.RoleId)
-               .OnDelete(DeleteBehavior.Restrict);
+        builder.HasIndex(u => u.Email).IsUnique();
+
+        builder.HasMany(u => u.Courses)
+       .WithOne(c => c.CreatedByNavigation)
+       .HasForeignKey(c => c.CreatedBy)
+       .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(u => u.UserCourses)
+               .WithOne(uc => uc.User)
+               .HasForeignKey(uc => uc.UserId)
+               .OnDelete(DeleteBehavior.Cascade);
+
     }
 }

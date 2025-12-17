@@ -14,7 +14,7 @@ public class CourseMapper : ICourseMapper
             Title = course.Title,
             ShortDescription = course.ShortDescription,
             LongDescription = course.LongDescription,
-            CategoryId = course.CategoryId,
+            Category = course.Category.Name,
             Difficulty = course.Difficulty,
             CreatedBy = course.CreatedBy,
             Thumbnail = course.Thumbnail,

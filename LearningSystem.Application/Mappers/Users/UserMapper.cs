@@ -1,3 +1,4 @@
+using LearningSystem.Application.Authentication.Commands;
 using LearningSystem.Application.Commands.Users;
 using LearningSystem.Application.Results.Users;
 using LearningSystem.Domain.Entities;
@@ -13,7 +14,6 @@ public class UserMapper : IUserMapper
             Id = user.Id,
             FullName = user.FullName,
             Email = user.Email,
-            RoleName = user.Role.Name,
             CreatedAt = user.CreatedAt
         };
     }
@@ -28,14 +28,25 @@ public class UserMapper : IUserMapper
         return new User
         {
             FullName = command.FullName,
-            Email = command.Email
+            Email = command.Email,
+            UserName = command.Email,
+        };
+    }
+
+    public User Map(RegisterUserCommand command)
+    {
+        return new User
+        {
+            FullName = command.FullName,
+            Email = command.Email,
+            UserName = command.Email,
         };
     }
 
     public void Map(UpdateUserCommand command, User user)
     {
-        user.Id = command.Id;
         user.FullName = command.FullName;
         user.Email = command.Email;
+        user.UserName = command.Email;
     }
 }

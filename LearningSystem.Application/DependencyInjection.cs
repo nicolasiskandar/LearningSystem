@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using LearningSystem.Application.Mappers.Users;
 using LearningSystem.Application.Mappers.Categories;
 using LearningSystem.Application.Mappers.Courses;
+using LearningSystem.Application.Services.Auth;
 
 namespace LearningSystem.Application;
 
@@ -15,6 +16,7 @@ public static class DependencyInjection
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<ICourseService, CourseService>();
         services.AddScoped<ICategoryService, CategoryService>();
+        services.AddScoped<IAuthService, AuthService>();
 
         services.AddScoped<ICategoryMapper, CategoryMapper>();
         services.AddScoped<ICourseMapper, CourseMapper>();

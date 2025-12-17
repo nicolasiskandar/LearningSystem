@@ -1,48 +1,52 @@
 using LearningSystem.Application.Persistence;
 using LearningSystem.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
-namespace LearningSystem.Infrastructure.Persistence.Repositories
+namespace LearningSystem.Infrastructure.Persistence.Repositories;
+
+public class CategoryRepository : ICategoryRepository
 {
-    public class CategoryRepository : ICategoryRepository
+    private readonly LearningSystemDbContext _context;
+
+    public CategoryRepository(LearningSystemDbContext context)
     {
-        private readonly LearningSystemDbContext _context;
+        _context = context;
+    }
 
-        public CategoryRepository(LearningSystemDbContext context)
-        {
-            _context = context;
-        }
+    public async Task AddCategoryAsync(Category category)
+    {
+        await _context.Categories.AddAsync(category);
+        await _context.SaveChangesAsync();
+    }
 
-        public void AddCategory(Category category)
-        {
-            _context.Categories.Add(category);
-            _context.SaveChanges();
-        }
+    public async Task<ICollection<Category>> GetAllCategoriesAsync()
+    {
+        return await _context.Categories
+                        .Include(c => c.Courses)
+                        .ToListAsync();
+    }
 
-        public ICollection<Category> GetAllCategories()
-        {
-            return _context.Categories.ToList();
-        }
+    public async Task<Category?> GetCategoryByIdAsync(int id)
+    {
+        return await _context.Categories
+                        .Include(c => c.Courses)
+                        .FirstOrDefaultAsync(c => c.Id == id);
+    }
 
-        public Category? GetCategoryById(int id)
-        {
-            return _context.Categories.Find(id);
-        }
+    public async Task<Category?> GetCategoryByNameAsync(string name)
+    {
+        return await _context.Categories.FirstOrDefaultAsync(c => c.Name == name);
+    }
 
-        public Category? GetCategoryByName(string name)
-        {
-            return _context.Categories.FirstOrDefault(c => c.Name == name);
-        }
+    public async Task RemoveCategoryAsync(Category category)
+    {
+        _context.Categories.Remove(category);
+        await _context.SaveChangesAsync();
+    }
 
-        public void RemoveCategory(Category category)
-        {
-            _context.Categories.Remove(category);
-            _context.SaveChanges();
-        }
-
-        public void UpdateCategory(Category category)
-        {
-            _context.Categories.Update(category);
-            _context.SaveChanges();
-        }
+    public async Task UpdateCategoryAsync(Category category)
+    {
+        _context.Categories.Update(category);
+        await _context.SaveChangesAsync();
     }
 }

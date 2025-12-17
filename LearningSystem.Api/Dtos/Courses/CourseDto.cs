@@ -6,7 +6,7 @@ public class CourseDto
     public string Title { get; set; } = null!;
     public string ShortDescription { get; set; } = null!;
     public string LongDescription { get; set; } = null!;
-    public int CategoryId { get; set; }
+    public string Category { get; set; } = null!;
     public string Difficulty { get; set; } = null!;
     public int CreatedBy { get; set; }
     public string Thumbnail { get; set; } = null!;

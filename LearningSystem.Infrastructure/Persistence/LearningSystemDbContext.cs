@@ -1,9 +1,10 @@
 ﻿using LearningSystem.Domain.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace LearningSystem.Infrastructure.Persistence;
 
-public class LearningSystemDbContext : DbContext
+public class LearningSystemDbContext : IdentityDbContext<User, Role, int>
 {
     public LearningSystemDbContext(DbContextOptions<LearningSystemDbContext> options)
         : base(options)
@@ -27,6 +28,7 @@ public class LearningSystemDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(LearningSystemDbContext).Assembly);
     }
 }

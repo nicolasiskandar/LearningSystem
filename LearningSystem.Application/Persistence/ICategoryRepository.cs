@@ -4,10 +4,10 @@ namespace LearningSystem.Application.Persistence;
 
 public interface ICategoryRepository
 {
-    Category? GetCategoryById(int id);
-    Category? GetCategoryByName(string name);
-    ICollection<Category> GetAllCategories();
-    void AddCategory(Category category);
-    void UpdateCategory(Category category);
-    void RemoveCategory(Category category);
+    Task<Category?> GetCategoryByIdAsync(int id);
+    Task<Category?> GetCategoryByNameAsync(string name);
+    Task<ICollection<Category>> GetAllCategoriesAsync();
+    Task AddCategoryAsync(Category category);
+    Task UpdateCategoryAsync(Category category);
+    Task RemoveCategoryAsync(Category category);
 }

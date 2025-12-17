@@ -17,60 +17,66 @@ public class CategoryService : ICategoryService
         _categoryMapper = categoryMapper;
     }
 
-    public CategoryResult CreateCategory(CreateCategoryCommand command)
+    public async Task<CategoryResult> CreateCategoryAsync(CreateCategoryCommand command)
     {
-        var existingCategory = _categoryRepository.GetCategoryByName(command.Name);
+        var existingCategory = await _categoryRepository.GetCategoryByNameAsync(command.Name);
         if (existingCategory != null)
             throw new CategoryAlreadyExistsException($"Category with name '{command.Name}' already exists.");
 
         var category = _categoryMapper.Map(command);
-        _categoryRepository.AddCategory(category);
+        await _categoryRepository.AddCategoryAsync(category);
 
         return _categoryMapper.Map(category);
     }
 
-    public void DeleteCategory(int id)
+    public async Task DeleteCategoryAsync(int id)
     {
-        var category = _categoryRepository.GetCategoryById(id);
+        var category = await _categoryRepository.GetCategoryByIdAsync(id);
         if (category == null)
             throw new CategoryNotFoundException(id);
 
-        _categoryRepository.RemoveCategory(category);
+        if (category.Courses != null && category.Courses.Any())
+            throw new CategoryHasCoursesException(id);
+
+        await _categoryRepository.RemoveCategoryAsync(category);
     }
 
-    public IEnumerable<CategoryResult> GetAllCategories()
+    public async Task<IEnumerable<CategoryResult>> GetAllCategoriesAsync()
     {
-        var categories = _categoryRepository.GetAllCategories();
+        var categories = await _categoryRepository.GetAllCategoriesAsync();
         return _categoryMapper.Map(categories);
     }
 
-    public CategoryResult GetCategoryById(int id)
+    public async Task<CategoryResult> GetCategoryByIdAsync(int id)
     {
-        var category = _categoryRepository.GetCategoryById(id);
+        var category = await _categoryRepository.GetCategoryByIdAsync(id);
         if (category == null)
             throw new CategoryNotFoundException(id);
 
+        if (category.Courses.Any())
+            throw new InvalidOperationException("Cannot delete a category that has courses.");
+
         return _categoryMapper.Map(category);
     }
 
-    public CategoryResult UpdateCategory(UpdateCategoryCommand command)
+    public async Task<CategoryResult> UpdateCategoryAsync(UpdateCategoryCommand command)
     {
-        var category = _categoryRepository.GetCategoryById(command.Id);
-
+        var category = await _categoryRepository.GetCategoryByIdAsync(command.Id);
         if (category == null)
             throw new CategoryNotFoundException(command.Id);
-        if (CategoryWithNameAlreadyExists(command))
+
+        if (await CategoryWithNameAlreadyExistsAsync(command))
             throw new CategoryAlreadyExistsException($"Category with name '{command.Name}' already exists.");
 
         _categoryMapper.Map(command, category);
-        _categoryRepository.UpdateCategory(category);
+        await _categoryRepository.UpdateCategoryAsync(category);
 
         return _categoryMapper.Map(category);
     }
 
-    private bool CategoryWithNameAlreadyExists(UpdateCategoryCommand command)
+    private async Task<bool> CategoryWithNameAlreadyExistsAsync(UpdateCategoryCommand command)
     {
-        var category = _categoryRepository.GetCategoryByName(command.Name);
+        var category = await _categoryRepository.GetCategoryByNameAsync(command.Name);
         return category != null && category.Id != command.Id;
     }
 }

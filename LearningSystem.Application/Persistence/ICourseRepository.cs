@@ -4,9 +4,11 @@ namespace LearningSystem.Application.Persistence;
 
 public interface ICourseRepository
 {
-    Course? GetCourseById(int id);
-    ICollection<Course> GetAllCourses();
-    void AddCourse(Course course);
-    void UpdateCourse(Course course);
-    void RemoveCourse(Course course);
+    Task<Course?> GetCourseByIdAsync(int id);
+    Task<ICollection<Course>> GetAllCoursesAsync();
+    Task AddCourseAsync(Course course);
+    Task UpdateCourseAsync(Course course);
+    Task RemoveCourseAsync(Course course);
+    Task<ICollection<Course>> GetCoursesByUserIdAsync(int userId);
+    Task<IEnumerable<Course>> GetCoursesEnrolledByUserAsync(int userId);
 }

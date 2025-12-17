@@ -1,4 +1,5 @@
 ﻿using LearningSystem.Application.Common.Exceptions;
+using LearningSystem.Application.Common.Exceptions.Categories;
 using System.Net;
 using System.Text.Json;
 
@@ -38,7 +39,14 @@ public class GlobalExceptionHandlerMiddleware
                 status = HttpStatusCode.NotFound;
                 break;
             case AlreadyExistsException:
+            case FailedException:
                 status = HttpStatusCode.BadRequest;
+                break;
+            case CategoryHasCoursesException:
+                status = HttpStatusCode.Conflict;
+                break;
+            case UnauthorizedAccessException:
+                status = HttpStatusCode.Unauthorized;
                 break;
             default:
                 status = HttpStatusCode.InternalServerError;

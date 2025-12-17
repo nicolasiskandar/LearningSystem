@@ -5,9 +5,9 @@ namespace LearningSystem.Application.Services.Categories;
 
 public interface ICategoryService
 {
-    CategoryResult GetCategoryById(int id);
-    IEnumerable<CategoryResult> GetAllCategories();
-    CategoryResult CreateCategory(CreateCategoryCommand command);
-    CategoryResult UpdateCategory(UpdateCategoryCommand command);
-    void DeleteCategory(int id);
+    Task<CategoryResult> GetCategoryByIdAsync(int id);
+    Task<IEnumerable<CategoryResult>> GetAllCategoriesAsync();
+    Task<CategoryResult> CreateCategoryAsync(CreateCategoryCommand command);
+    Task<CategoryResult> UpdateCategoryAsync(UpdateCategoryCommand command);
+    Task DeleteCategoryAsync(int id);
 }

@@ -1,10 +1,12 @@
 using LearningSystem.Api.Dtos.Courses;
 using LearningSystem.Api.Mappers.Courses;
 using LearningSystem.Application.Services.Courses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearningSystem.Api.Controllers;
 
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class CoursesController : ControllerBase
@@ -19,41 +21,41 @@ public class CoursesController : ControllerBase
     }
 
     [HttpGet]
-    public ActionResult<ICollection<CourseDto>> GetCourses()
+    public async Task<ActionResult<ICollection<CourseDto>>> GetCourses()
     {
-        var courses = _courseService.GetCourses();
+        var courses = await _courseService.GetCoursesAsync();
         var dtos = _courseMapper.Map(courses);
         return Ok(dtos);
     }
 
     [HttpGet("{id:int}")]
-    public ActionResult<CourseDto> GetCourseById(int id)
+    public async Task<ActionResult<CourseDto>> GetCourseById(int id)
     {
-        var course = _courseService.GetCourseById(id);
+        var course = await _courseService.GetCourseByIdAsync(id);
         var dto = _courseMapper.Map(course);
         return Ok(dto);
     }
 
     [HttpPost]
-    public ActionResult<CourseDto> AddCourse([FromBody] CreateCourseDto dto)
+    public async Task<ActionResult<CourseDto>> AddCourse([FromBody] CreateCourseDto dto)
     {
         var command = _courseMapper.Map(dto);
-        var createdCourse = _courseService.AddCourse(command);
+        var createdCourse = await _courseService.AddCourseAsync(command);
         return CreatedAtAction(nameof(GetCourseById), new { id = createdCourse.Id }, createdCourse);
     }
 
     [HttpPut("{id:int}")]
-    public ActionResult<CourseDto> UpdateCourse(int id, [FromBody] UpdateCourseDto dto)
+    public async Task<ActionResult<CourseDto>> UpdateCourse(int id, [FromBody] UpdateCourseDto dto)
     {
         var command = _courseMapper.Map(dto, id);
-        var updatedCourse = _courseService.UpdateCourse(command);
+        var updatedCourse = await _courseService.UpdateCourseAsync(command);
         return Ok(updatedCourse);
     }
 
     [HttpDelete("{id:int}")]
-    public IActionResult DeleteCourse(int id)
+    public async Task<IActionResult> DeleteCourse(int id)
     {
-        _courseService.DeleteCourse(id);
+        await _courseService.DeleteCourseAsync(id);
         return NoContent();
     }
 }

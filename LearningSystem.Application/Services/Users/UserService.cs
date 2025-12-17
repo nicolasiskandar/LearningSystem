@@ -1,113 +1,144 @@
 ﻿using LearningSystem.Application.Commands.Users;
 using LearningSystem.Application.Common.Exceptions.Users;
-using LearningSystem.Application.Common.Security;
 using LearningSystem.Application.Mappers.Courses;
 using LearningSystem.Application.Mappers.Users;
 using LearningSystem.Application.Persistence;
 using LearningSystem.Application.Results.Courses;
 using LearningSystem.Application.Results.Users;
+using LearningSystem.Domain.Entities;
 using LearningSystem.Domain.Enums;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace LearningSystem.Application.Services.Users;
 
 public class UserService : IUserService
 {
-    private readonly IUserRepository _userRepository;
+    private readonly UserManager<User> _userManager;
     private readonly IUserMapper _userMapper;
-    private readonly IPasswordHasher _passwordHasher;
     private readonly ICourseMapper _courseMapper;
+    private readonly ICourseRepository _courseRepository;
 
     public UserService(
-        IUserRepository userRepository,
+        UserManager<User> userManager,
         IUserMapper userMapper,
-        IPasswordHasher passwordHasher,
-        ICourseMapper courseMapper)
+        ICourseMapper courseMapper,
+        ICourseRepository courseRepository)
     {
-        _userRepository = userRepository;
+        _userManager = userManager;
         _userMapper = userMapper;
-        _passwordHasher = passwordHasher;
         _courseMapper = courseMapper;
+        _courseRepository = courseRepository;
     }
 
-    public UserResult GetUserById(int id)
+    public async Task<UserResult> AddUserAsync(CreateUserCommand command)
     {
-        var user = _userRepository.GetUserById(id);
-        if (user == null)
-            throw new UserNotFoundException(id);
-
-        return _userMapper.Map(user);
-    }
-
-    public IEnumerable<UserResult> GetUsers()
-    {
-        var users = _userRepository.GetUsers();
-        return _userMapper.Map(users);
-    }
-
-    public IEnumerable<CourseResult> GetCoursesCreatedByUser(int userId)
-    {
-        var user = _userRepository.GetUserByIdWithCourses(userId);
-        if (user == null)
-            throw new UserNotFoundException(userId);
-
-        return user.Courses.Select(c => _courseMapper.Map(c));
-    }
-
-    public IEnumerable<CourseResult> GetCoursesEnrolledByUser(int userId)
-    {
-        var user = _userRepository.GetUserByIdWithEnrolledCourses(userId);
-        if (user == null)
-            throw new UserNotFoundException(userId);
-
-        return user.UserCourses
-            .Select(uc => _courseMapper.Map(uc.Course));
-    }
-
-
-    public UserResult AddUser(CreateUserCommand command)
-    {
-        var existingUser = _userRepository.GetUserByEmail(command.Email);
+        var existingUser = await _userManager.FindByEmailAsync(command.Email);
         if (existingUser != null)
             throw new UserAlreadyExistsException($"User with email {command.Email} already exists.");
 
         var user = _userMapper.Map(command);
-        user.HashedPassword = _passwordHasher.HashPassword(command.Password);
         user.CreatedAt = DateTime.UtcNow;
-        user.RoleId = (int)Roles.Student;
 
-        _userRepository.AddUser(user);
+        var result = await _userManager.CreateAsync(user, command.Password);
+        if (!result.Succeeded)
+            throw new UserRegistrationFailedException();
 
-        var createdUser = _userRepository.GetUserById(user.Id);
-        return _userMapper.Map(createdUser!);
+        await _userManager.AddToRoleAsync(user, Roles.Student.ToString());
+
+        return await GetUserResult(user);
     }
 
-    public UserResult UpdateUser(UpdateUserCommand command)
+    public async Task<UserResult> GetUserByIdAsync(int id)
     {
-        var user = _userRepository.GetUserById(command.Id);
-
+        var user = await _userManager.FindByIdAsync(id.ToString());
         if (user == null)
-            throw new UserNotFoundException(command.Id);
+            throw new UserNotFoundException(id);
+
+        return await GetUserResult(user); ;
+    }
+
+    public async Task<IEnumerable<UserResult>> GetUsersAsync()
+    {
+        var users = _userManager.Users.ToList();
+        var results = new List<UserResult>();
+
+        foreach (var user in users)
+        {
+            var userResult = await GetUserResult(user);
+            results.Add(userResult);
+        }
+
+        return results;
+    }
+
+    public async Task<IEnumerable<CourseResult>> GetCoursesCreatedByUserAsync(int userId)
+    {
+        var user = await _userManager.Users
+            .Include(u => u.Courses)
+            .FirstOrDefaultAsync(u => u.Id == userId);
+
+        var courses = await _courseRepository.GetCoursesByUserIdAsync(userId);
+
+        return courses.Select(c => _courseMapper.Map(c));
+    }
+
+    public async Task<IEnumerable<CourseResult>> GetCoursesEnrolledByUserAsync(int userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user == null)
+            throw new UserNotFoundException(userId);
+
+        var courses = await _courseRepository.GetCoursesEnrolledByUserAsync(userId);
+        return _courseMapper.Map(courses);
+    }
+
+
+    public async Task<UserResult> UpdateUserAsync(UpdateUserCommand command)
+    {
+        var user = await GetUserFromRepo(command.Id);
+
         if (UserWithEmailAlreadyExists(command))
             throw new UserAlreadyExistsException($"User with email {command.Email} already exists.");
 
         _userMapper.Map(command, user);
-        _userRepository.UpdateUser(user);
+        var result = await _userManager.UpdateAsync(user);
+        if (!result.Succeeded)
+            throw new UserUpdateFailedException();
 
-        return _userMapper.Map(user);
+        return await GetUserResult(user);
     }
 
-    public void DeleteUser(int id)
+    public async Task DeleteUserAsync(int id)
     {
-        var user = _userRepository.GetUserById(id);
+        var user = await GetUserFromRepo(id);
+
+        var result = await _userManager.DeleteAsync(user);
+        if (!result.Succeeded)
+            throw new UserDeleteFailedException();
+
+    }
+
+    private async Task<User?> GetUserFromRepo(int id)
+    {
+        var user = await _userManager.FindByIdAsync(id.ToString());
         if (user == null)
             throw new UserNotFoundException(id);
+        return user;
+    }
 
-        _userRepository.DeleteUser(user);
+    private async Task<UserResult> GetUserResult(User user)
+    {
+        var userResult = _userMapper.Map(user);
+        var roles = await _userManager.GetRolesAsync(user);
+        userResult.RoleName = roles.FirstOrDefault();
+
+        return userResult;
     }
 
     private bool UserWithEmailAlreadyExists(UpdateUserCommand command)
     {
-        var existingUser = _userRepository.GetUserByEmail(command.Email);
+        var existingUser = _userManager.Users.FirstOrDefault(u => u.Email == command.Email);
         return existingUser != null && existingUser.Id != command.Id;
     }
 }

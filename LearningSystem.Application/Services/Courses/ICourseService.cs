@@ -5,9 +5,9 @@ namespace LearningSystem.Application.Services.Courses;
 
 public interface ICourseService
 {
-    CourseResult GetCourseById(int id);
-    IEnumerable<CourseResult> GetCourses();
-    CourseResult AddCourse(CreateCourseCommand command);
-    CourseResult UpdateCourse(UpdateCourseCommand command);
-    void DeleteCourse(int id);
+    Task<CourseResult> GetCourseByIdAsync(int id);
+    Task<IEnumerable<CourseResult>> GetCoursesAsync();
+    Task<CourseResult> AddCourseAsync(CreateCourseCommand command);
+    Task<CourseResult> UpdateCourseAsync(UpdateCourseCommand command);
+    Task DeleteCourseAsync(int id);
 }

@@ -6,11 +6,14 @@ namespace LearningSystem.Application.Services.Users;
 
 public interface IUserService
 {
-    UserResult GetUserById(int id);
-    IEnumerable<UserResult> GetUsers();
-    IEnumerable<CourseResult> GetCoursesCreatedByUser(int userId);
-    IEnumerable<CourseResult> GetCoursesEnrolledByUser(int userId);
-    UserResult AddUser(CreateUserCommand command);
-    UserResult UpdateUser(UpdateUserCommand command);
-    void DeleteUser(int id);
+    Task<UserResult> AddUserAsync(CreateUserCommand command);
+
+    Task<UserResult> GetUserByIdAsync(int id);
+    Task<IEnumerable<UserResult>> GetUsersAsync();
+
+    Task<UserResult> UpdateUserAsync(UpdateUserCommand command);
+    Task DeleteUserAsync(int id);
+
+    Task<IEnumerable<CourseResult>> GetCoursesCreatedByUserAsync(int userId);
+    Task<IEnumerable<CourseResult>> GetCoursesEnrolledByUserAsync(int userId);
 }
