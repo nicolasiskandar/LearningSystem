@@ -7,6 +7,7 @@ using LearningSystem.Application.Mappers.Users;
 using LearningSystem.Domain.Entities;
 using LearningSystem.Domain.Enums;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace LearningSystem.Application.Services.Auth;
 
@@ -46,8 +47,9 @@ public class AuthService : IAuthService
 
         var roles = await _userManager.GetRolesAsync(user);
         var token = _jwtGenerator.GenerateToken(user, roles);
+        var refreshToken = _jwtGenerator.CreateRefreshToken(user);
 
-        return new AuthenticationResult(user, token);
+        return new AuthenticationResult(user, token, refreshToken);
     }
 
     public async Task<AuthenticationResult> LoginAsync(LoginQuery query)
@@ -62,7 +64,24 @@ public class AuthService : IAuthService
 
         var roles = await _userManager.GetRolesAsync(user);
         var token = _jwtGenerator.GenerateToken(user, roles);
+        var refreshToken = _jwtGenerator.CreateRefreshToken(user);
 
-        return new AuthenticationResult(user, token);
+        return new AuthenticationResult(user, token, refreshToken);
+    }
+
+    public async Task<AuthenticationResult> RefreshTokenAsync(string refreshToken)
+    {
+        var principal = _jwtGenerator.GetPrincipalFromExpiredToken(refreshToken);
+        var userId = principal.Claims.First(c => c.Type == ClaimTypes.NameIdentifier).Value;
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+            throw new UserNotFoundException("User not found");
+
+        var roles = await _userManager.GetRolesAsync(user);
+        var newAccessToken = _jwtGenerator.GenerateToken(user, roles);
+        var newRefreshToken = _jwtGenerator.CreateRefreshToken(user);
+
+        return new AuthenticationResult(user, newAccessToken, newRefreshToken);
     }
 }

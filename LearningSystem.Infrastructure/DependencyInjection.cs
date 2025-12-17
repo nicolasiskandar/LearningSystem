@@ -56,13 +56,13 @@ public static class DependencyInjection
                 ValidIssuer = configuration["Jwt:Issuer"],
                 ValidAudience = configuration["Jwt:Audience"],
                 IssuerSigningKey = new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(configuration["Jwt:Key"]))
+                    Encoding.UTF8.GetBytes(configuration["Jwt:Key"])),
             };
         });
 
         services.AddAuthorization(options =>
         {
-            options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+            options.AddPolicy("AdminOnly", policy => policy.RequireRole("SuperAdmin"));
         });
 
         return services;

@@ -8,4 +8,5 @@ public interface IAuthService
 {
     Task<AuthenticationResult> RegisterAsync(RegisterUserCommand command);
     Task<AuthenticationResult> LoginAsync(LoginQuery query);
+    Task<AuthenticationResult> RefreshTokenAsync(string refreshToken);
 }
