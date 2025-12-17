@@ -14,6 +14,8 @@ public static class DependencyInjection
         services.AddScoped<ICourseMapper, CourseMapper>();
         services.AddScoped<IAuthMapper, AuthMapper>();
 
+        services.AddHttpContextAccessor();
+
         return services;
     }
 }

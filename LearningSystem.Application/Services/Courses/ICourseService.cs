@@ -10,4 +10,5 @@ public interface ICourseService
     Task<CourseResult> AddCourseAsync(CreateCourseCommand command);
     Task<CourseResult> UpdateCourseAsync(UpdateCourseCommand command);
     Task DeleteCourseAsync(int id);
+    Task EnrollUserInCourse(int userId, int courseId);
 }

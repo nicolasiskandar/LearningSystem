@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LearningSystem.Api.Controllers;
 
-[Authorize(Roles = "SuperAdmin")]
 [Route("api/[controller]")]
 [ApiController]
 public class UsersController : ControllerBase
@@ -24,7 +23,17 @@ public class UsersController : ControllerBase
         _courseMapper = courseMapper;
     }
 
+    [HttpGet("me")]
+    [Authorize]
+    public async Task<ActionResult<UserDto>> GetMe()
+    {
+        var user = await _userService.GetMeAsync();
+        var dto = _userMapper.Map(user);
+        return Ok(dto);
+    }
+
     [HttpGet]
+    [Authorize(Roles = "SuperAdmin")]
     public async Task<ActionResult<ICollection<UserDto>>> GetUsers()
     {
         var users = await _userService.GetUsersAsync();
@@ -33,6 +42,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [Authorize(Roles = "SuperAdmin")]
     public async Task<ActionResult<UserDto>> GetUserById(int id)
     {
         var user = await _userService.GetUserByIdAsync(id);
@@ -41,6 +51,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("{id:int}/courses/created")]
+    [Authorize]
     public async Task<ActionResult<ICollection<CourseDto>>> GetCoursesCreatedByUser(int id)
     {
         var courses = await _userService.GetCoursesCreatedByUserAsync(id);
@@ -49,6 +60,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("{id:int}/courses/enrolled")]
+    [Authorize]
     public async Task<ActionResult<ICollection<CourseDto>>> GetCoursesEnrolledByUser(int id)
     {
         var courses = await _userService.GetCoursesEnrolledByUserAsync(id);
@@ -57,6 +69,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "SuperAdmin")]
     public async Task<ActionResult<UserDto>> AddUser([FromBody] CreateUserDto dto)
     {
         var command = _userMapper.Map(dto);
@@ -65,6 +78,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Roles = "SuperAdmin")]
     public async Task<ActionResult<UserDto>> UpdateUser(int id, [FromBody] UpdateUserDto dto)
     {
         var command = _userMapper.Map(dto, id);
@@ -73,6 +87,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "SuperAdmin")]
     public async Task<IActionResult> DeleteUser(int id)
     {
         await _userService.DeleteUserAsync(id);

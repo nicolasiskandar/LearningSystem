@@ -16,4 +16,5 @@ public interface IUserService
 
     Task<IEnumerable<CourseResult>> GetCoursesCreatedByUserAsync(int userId);
     Task<IEnumerable<CourseResult>> GetCoursesEnrolledByUserAsync(int userId);
+    Task<UserResult> GetMeAsync();
 }

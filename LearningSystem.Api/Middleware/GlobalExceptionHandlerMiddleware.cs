@@ -42,7 +42,7 @@ public class GlobalExceptionHandlerMiddleware
             case FailedException:
                 status = HttpStatusCode.BadRequest;
                 break;
-            case CategoryHasCoursesException:
+            case ConflictException:
                 status = HttpStatusCode.Conflict;
                 break;
             case UnauthorizedAccessException:

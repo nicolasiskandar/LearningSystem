@@ -3,6 +3,7 @@ using LearningSystem.Api.Mappers.Courses;
 using LearningSystem.Application.Services.Courses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace LearningSystem.Api.Controllers;
 
@@ -57,5 +58,19 @@ public class CoursesController : ControllerBase
     {
         await _courseService.DeleteCourseAsync(id);
         return NoContent();
+    }
+
+    [HttpPost("{courseId:int}/enroll")]
+    public async Task<IActionResult> Enroll(int courseId)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        if (userIdClaim == null)
+            throw new UnauthorizedAccessException("User is not authenticated.");
+
+        if (!int.TryParse(userIdClaim.Value, out int userId))
+            throw new UnauthorizedAccessException("Invalid user ID.");
+
+        await _courseService.EnrollUserInCourse(userId, courseId);
+        return Ok();
     }
 }

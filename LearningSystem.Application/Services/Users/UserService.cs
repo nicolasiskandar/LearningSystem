@@ -10,6 +10,9 @@ using LearningSystem.Domain.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
+
 namespace LearningSystem.Application.Services.Users;
 
 public class UserService : IUserService
@@ -18,17 +21,20 @@ public class UserService : IUserService
     private readonly IUserMapper _userMapper;
     private readonly ICourseMapper _courseMapper;
     private readonly ICourseRepository _courseRepository;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
     public UserService(
         UserManager<User> userManager,
         IUserMapper userMapper,
         ICourseMapper courseMapper,
-        ICourseRepository courseRepository)
+        ICourseRepository courseRepository,
+        IHttpContextAccessor httpContextAccessor)
     {
         _userManager = userManager;
         _userMapper = userMapper;
         _courseMapper = courseMapper;
         _courseRepository = courseRepository;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<UserResult> AddUserAsync(CreateUserCommand command)
@@ -140,5 +146,17 @@ public class UserService : IUserService
     {
         var existingUser = _userManager.Users.FirstOrDefault(u => u.Email == command.Email);
         return existingUser != null && existingUser.Id != command.Id;
+    }
+
+    public async Task<UserResult> GetMeAsync()
+    {
+        var userIdClaim = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier);
+        if (userIdClaim == null)
+            throw new UserNotFoundException();
+
+        if (!int.TryParse(userIdClaim.Value, out int userId))
+            throw new UserNotFoundException();
+
+        return await GetUserByIdAsync(userId);
     }
 }

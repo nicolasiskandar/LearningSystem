@@ -8,6 +8,7 @@ using LearningSystem.Application.Common.Exceptions.Categories;
 using LearningSystem.Domain.Entities;
 using LearningSystem.Domain.Enums;
 using Microsoft.AspNetCore.Identity;
+using LearningSystem.Application.Common.Exceptions.UserCourse;
 
 namespace LearningSystem.Application.Services.Courses;
 
@@ -17,17 +18,46 @@ public class CourseService : ICourseService
     private readonly ICategoryRepository _categoryRepository;
     private readonly ICourseMapper _courseMapper;
     private readonly UserManager<User> _userManager;
+    private readonly IUserRepository _userRepository;
+    private readonly IUserCourseRepository _userCourseRepository;
 
     public CourseService(
         ICourseRepository courseRepository,
         ICategoryRepository categoryRepository,
         ICourseMapper courseMapper,
-        UserManager<User> userManager)
+        UserManager<User> userManager,
+        IUserRepository userRepository,
+        IUserCourseRepository userCourseRepository)
     {
         _courseRepository = courseRepository;
         _categoryRepository = categoryRepository;
         _courseMapper = courseMapper;
         _userManager = userManager;
+        _userRepository = userRepository;
+        _userCourseRepository = userCourseRepository;
+    }
+
+    public async Task EnrollUserInCourse(int userId, int courseId)
+    {
+        var user = await _userRepository.GetUserByIdAsync(userId);
+        if (user == null)
+            throw new UserNotFoundException(userId);
+
+        var course = await _courseRepository.GetCourseByIdAsync(courseId);
+        if (course == null)
+            throw new CourseNotFoundException(courseId);
+
+        var userCourse = await _userCourseRepository.GetUserCourseAsync(userId, courseId);
+        if (userCourse != null)
+            throw new UserAlreadyEnrolledInCourseException(userId, courseId);
+
+        var newUserCourse = new UserCourse
+        {
+            UserId = userId,
+            CourseId = courseId
+        };
+
+        await _userCourseRepository.AddUserCourseAsync(newUserCourse);
     }
 
     public async Task<CourseResult> GetCourseByIdAsync(int id)
@@ -51,19 +81,7 @@ public class CourseService : ICourseService
         if (creator == null)
             throw new UserNotFoundException(command.CreatedBy);
 
-        if (!await _userManager.IsInRoleAsync(creator, Roles.Instructor.ToString()))
-        {
-            if (await _userManager.IsInRoleAsync(creator, Roles.Student.ToString()))
-            {
-                var removeResult = await _userManager.RemoveFromRoleAsync(creator, Roles.Student.ToString());
-                if (!removeResult.Succeeded)
-                    throw new InvalidOperationException("Failed to remove Student role from the user.");
-            }
-
-            var addResult = await _userManager.AddToRoleAsync(creator, Roles.Instructor.ToString());
-            if (!addResult.Succeeded)
-                throw new InvalidOperationException("Failed to assign Instructor role to the user.");
-        }
+        await TransformStudentToInstructor(creator);
 
         var category = await _categoryRepository.GetCategoryByIdAsync(command.CategoryId);
         if (category == null)
@@ -76,7 +94,6 @@ public class CourseService : ICourseService
 
         return _courseMapper.Map(course);
     }
-
 
     public async Task<CourseResult> UpdateCourseAsync(UpdateCourseCommand command)
     {
@@ -101,5 +118,22 @@ public class CourseService : ICourseService
             throw new CourseNotFoundException(id);
 
         await _courseRepository.RemoveCourseAsync(course);
+    }
+
+    private async Task TransformStudentToInstructor(User creator)
+    {
+        var isInstructor = await _userManager.IsInRoleAsync(creator, Roles.Instructor.ToString());
+        if (isInstructor) return;
+
+        var notAStudent = !await _userManager.IsInRoleAsync(creator, Roles.Student.ToString());
+        if (notAStudent) return;
+
+        var removeResult = await _userManager.RemoveFromRoleAsync(creator, Roles.Student.ToString());
+        if (!removeResult.Succeeded)
+            throw new InvalidOperationException("Failed to remove Student role from the user.");
+
+        var addResult = await _userManager.AddToRoleAsync(creator, Roles.Instructor.ToString());
+        if (!addResult.Succeeded)
+            throw new InvalidOperationException("Failed to assign Instructor role to the user.");
     }
 }
