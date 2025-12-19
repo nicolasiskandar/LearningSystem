@@ -9,6 +9,8 @@ using LearningSystem.Domain.Entities;
 using LearningSystem.Domain.Enums;
 using Microsoft.AspNetCore.Identity;
 using LearningSystem.Application.Common.Exceptions.UserCourse;
+using System.Security.Claims;
+using LearningSystem.Application.Common.Exceptions;
 
 namespace LearningSystem.Application.Services.Courses;
 
@@ -75,11 +77,20 @@ public class CourseService : ICourseService
         return _courseMapper.Map(courses);
     }
 
-    public async Task<CourseResult> AddCourseAsync(CreateCourseCommand command)
+    public async Task<CourseResult> AddCourseAsync(CreateCourseCommand command, ClaimsPrincipal claimsPrincipal)
     {
         var creator = await _userManager.FindByIdAsync(command.CreatedBy.ToString());
         if (creator == null)
             throw new UserNotFoundException(command.CreatedBy);
+
+        var userId = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+            throw new UnauthorizedAccessException("User is not authenticated.");
+
+        var isAdmin = claimsPrincipal.IsInRole(Roles.SuperAdmin.ToString());
+
+        if (!isAdmin && command.CreatedBy.ToString() != userId)
+            throw new ForbiddenExcception("You are not authorized to create this course");
 
         await TransformStudentToInstructor(creator);
 
@@ -95,11 +106,20 @@ public class CourseService : ICourseService
         return _courseMapper.Map(course);
     }
 
-    public async Task<CourseResult> UpdateCourseAsync(UpdateCourseCommand command)
+    public async Task<CourseResult> UpdateCourseAsync(UpdateCourseCommand command, ClaimsPrincipal claimsPrincipal)
     {
         var course = await _courseRepository.GetCourseByIdAsync(command.Id);
         if (course == null)
             throw new CourseNotFoundException(command.Id);
+
+        var userId = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+            throw new UnauthorizedAccessException("User is not authenticated.");
+
+        var isAdmin = claimsPrincipal.IsInRole(Roles.SuperAdmin.ToString());
+        
+        if (!isAdmin && course.CreatedBy.ToString() != userId)
+            throw new ForbiddenExcception("You are not authorized to update this course");
 
         var category = await _categoryRepository.GetCategoryByIdAsync(command.CategoryId);
         if (category == null)
@@ -111,11 +131,20 @@ public class CourseService : ICourseService
         return _courseMapper.Map(course);
     }
 
-    public async Task DeleteCourseAsync(int id)
+    public async Task DeleteCourseAsync(int id, ClaimsPrincipal claimsPrincipal)
     {
         var course = await _courseRepository.GetCourseByIdAsync(id);
         if (course == null)
             throw new CourseNotFoundException(id);
+        
+        var userId = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (userId == null)
+            throw new UserNotFoundException("User not found");
+        
+        var isAdmin = claimsPrincipal.IsInRole(Roles.SuperAdmin.ToString());
+
+        if (!isAdmin && course.CreatedBy.ToString() != userId)
+            throw new ForbiddenExcception("You are not authorized to delete this course");
 
         await _courseRepository.RemoveCourseAsync(course);
     }

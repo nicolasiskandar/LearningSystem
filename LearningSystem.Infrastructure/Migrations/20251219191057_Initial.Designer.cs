@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LearningSystem.Infrastructure.Migrations
 {
     [DbContext(typeof(LearningSystemDbContext))]
-    [Migration("20251217171804_UpdateUser")]
-    partial class UpdateUser
+    [Migration("20251219191057_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -170,6 +170,9 @@ namespace LearningSystem.Infrastructure.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
                     b.Property<int>("EstimatedDuration")
                         .HasColumnType("int");
 
@@ -185,6 +188,8 @@ namespace LearningSystem.Infrastructure.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CreatedBy");
 
                     b.HasIndex("CourseId", "Order")
                         .IsUnique();
@@ -705,7 +710,15 @@ namespace LearningSystem.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("LearningSystem.Domain.Entities.User", "CreatedByNavigation")
+                        .WithMany()
+                        .HasForeignKey("CreatedBy")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Course");
+
+                    b.Navigation("CreatedByNavigation");
                 });
 
             modelBuilder.Entity("LearningSystem.Domain.Entities.LessonCompleted", b =>

@@ -37,6 +37,7 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<ActionResult<CategoryDto>> Create([FromBody] CreateCategoryDto dto)
     {
         var command = _categoryMapper.Map(dto);

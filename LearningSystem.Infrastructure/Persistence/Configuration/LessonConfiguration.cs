@@ -28,5 +28,10 @@ public class LessonConfiguration : IEntityTypeConfiguration<Lesson>
                .WithMany(c => c.Lessons)
                .HasForeignKey(l => l.CourseId)
                .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(l => l.CreatedByNavigation)
+               .WithMany()
+               .HasForeignKey(l => l.CreatedBy)
+               .OnDelete(DeleteBehavior.Restrict);
     }
 }

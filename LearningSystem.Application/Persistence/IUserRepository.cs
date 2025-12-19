@@ -6,7 +6,7 @@ public interface IUserRepository
 {
     Task<User?> GetUserByIdAsync(int id);
     Task<User?> GetUserByEmailAsync(string email);
-    Task<ICollection<User>> GetUsersAsync();
+    Task<IEnumerable<User>> GetUsersAsync();
     Task<User?> GetUserByIdWithCoursesAsync(int id);
     Task<User?> GetUserByIdWithEnrolledCoursesAsync(int id);
     Task AddUserAsync(User user);

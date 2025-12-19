@@ -37,7 +37,7 @@ public class UserRepository : IUserRepository
             .FirstOrDefaultAsync(u => u.Id == id);
     }
 
-    public async Task<ICollection<User>> GetUsersAsync()
+    public async Task<IEnumerable<User>> GetUsersAsync()
     {
         return await _context.Users.ToListAsync();
     }
@@ -52,9 +52,9 @@ public class UserRepository : IUserRepository
     public async Task<User?> GetUserByIdWithEnrolledCoursesAsync(int id)
     {
         return await _context.Users
-            .Include(u => u.UserCourses)
-                .ThenInclude(uc => uc.Course)
-            .FirstOrDefaultAsync(u => u.Id == id);
+                        .Include(u => u.UserCourses)
+                        .ThenInclude(uc => uc.Course)
+                        .FirstOrDefaultAsync(u => u.Id == id);
     }
 
     public async Task UpdateUserAsync(User user)

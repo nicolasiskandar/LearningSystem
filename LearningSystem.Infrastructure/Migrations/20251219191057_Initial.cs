@@ -212,7 +212,7 @@ namespace LearningSystem.Infrastructure.Migrations
                         column: x => x.CreatedBy,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Courses_Categories_CategoryId",
                         column: x => x.CategoryId,
@@ -260,12 +260,19 @@ namespace LearningSystem.Infrastructure.Migrations
                     VideoUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Order = table.Column<int>(type: "int", nullable: false),
                     EstimatedDuration = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Lessons", x => x.Id);
                     table.CheckConstraint("CHK_Lesson_EstimatedDuration", "[EstimatedDuration] > 0");
+                    table.ForeignKey(
+                        name: "FK_Lessons_AspNetUsers_CreatedBy",
+                        column: x => x.CreatedBy,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Lessons_Courses_CourseId",
                         column: x => x.CourseId,
@@ -587,6 +594,11 @@ namespace LearningSystem.Infrastructure.Migrations
                 table: "Lessons",
                 columns: new[] { "CourseId", "Order" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Lessons_CreatedBy",
+                table: "Lessons",
+                column: "CreatedBy");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Questions_QuestionTypeId",

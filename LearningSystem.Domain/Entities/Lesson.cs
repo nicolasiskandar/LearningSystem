@@ -18,6 +18,10 @@ public partial class Lesson
 
     public DateTime CreatedAt { get; set; }
 
+    public int CreatedBy { get; set; }
+
+    public virtual User CreatedByNavigation { get; set; } = null!;
+
     public virtual Course Course { get; set; } = null!;
 
     public virtual ICollection<LessonCompleted> LessonsCompleted { get; set; } = new List<LessonCompleted>();

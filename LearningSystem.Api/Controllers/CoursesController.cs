@@ -41,7 +41,7 @@ public class CoursesController : ControllerBase
     public async Task<ActionResult<CourseDto>> AddCourse([FromBody] CreateCourseDto dto)
     {
         var command = _courseMapper.Map(dto);
-        var createdCourse = await _courseService.AddCourseAsync(command);
+        var createdCourse = await _courseService.AddCourseAsync(command, User);
         return CreatedAtAction(nameof(GetCourseById), new { id = createdCourse.Id }, createdCourse);
     }
 
@@ -49,14 +49,14 @@ public class CoursesController : ControllerBase
     public async Task<ActionResult<CourseDto>> UpdateCourse(int id, [FromBody] UpdateCourseDto dto)
     {
         var command = _courseMapper.Map(dto, id);
-        var updatedCourse = await _courseService.UpdateCourseAsync(command);
+        var updatedCourse = await _courseService.UpdateCourseAsync(command, User);
         return Ok(updatedCourse);
     }
 
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteCourse(int id)
     {
-        await _courseService.DeleteCourseAsync(id);
+        await _courseService.DeleteCourseAsync(id, User);
         return NoContent();
     }
 

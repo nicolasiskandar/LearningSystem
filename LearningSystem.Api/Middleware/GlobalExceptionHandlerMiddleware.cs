@@ -1,5 +1,4 @@
 ﻿using LearningSystem.Application.Common.Exceptions;
-using LearningSystem.Application.Common.Exceptions.Categories;
 using System.Net;
 using System.Text.Json;
 
@@ -44,6 +43,9 @@ public class GlobalExceptionHandlerMiddleware
                 break;
             case ConflictException:
                 status = HttpStatusCode.Conflict;
+                break;
+            case ForbiddenExcception:
+                status = HttpStatusCode.Forbidden;
                 break;
             case UnauthorizedAccessException:
                 status = HttpStatusCode.Unauthorized;

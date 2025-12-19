@@ -10,7 +10,6 @@ public class CreateCourseCommand
     public int CreatedBy { get; set; }
     public string Thumbnail { get; set; }
     public bool IsPublished { get; set; }
-
     public CreateCourseCommand(string title, string shortDescription, string longDescription, int categoryId, string difficulty, int createdBy, string thumbnail, bool isPublished)
     {
         Title = title;

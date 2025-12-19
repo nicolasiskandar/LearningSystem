@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using LearningSystem.Application.Mappers.Lessons;
 
 namespace LearningSystem.Application.Services.Users;
 
@@ -20,20 +21,26 @@ public class UserService : IUserService
     private readonly UserManager<User> _userManager;
     private readonly IUserMapper _userMapper;
     private readonly ICourseMapper _courseMapper;
+    private readonly ILessonMapper _lessonMapper;
     private readonly ICourseRepository _courseRepository;
+    private readonly ILessonRepository _lessonRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     public UserService(
         UserManager<User> userManager,
         IUserMapper userMapper,
         ICourseMapper courseMapper,
+        ILessonMapper lessonMapper,
         ICourseRepository courseRepository,
+        ILessonRepository lessonRepository,
         IHttpContextAccessor httpContextAccessor)
     {
         _userManager = userManager;
         _userMapper = userMapper;
         _courseMapper = courseMapper;
+        _lessonMapper = lessonMapper;
         _courseRepository = courseRepository;
+        _lessonRepository = lessonRepository;
         _httpContextAccessor = httpContextAccessor;
     }
 
@@ -98,7 +105,6 @@ public class UserService : IUserService
         var courses = await _courseRepository.GetCoursesEnrolledByUserAsync(userId);
         return _courseMapper.Map(courses);
     }
-
 
     public async Task<UserResult> UpdateUserAsync(UpdateUserCommand command)
     {
