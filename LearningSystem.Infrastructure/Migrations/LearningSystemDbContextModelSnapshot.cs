@@ -236,7 +236,8 @@ namespace LearningSystem.Infrastructure.Migrations
 
                     b.Property<string>("QuestionText")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<int>("QuestionTypeId")
                         .HasColumnType("int");
@@ -655,7 +656,7 @@ namespace LearningSystem.Infrastructure.Migrations
                     b.HasOne("LearningSystem.Domain.Entities.Question", "Question")
                         .WithMany("Answers")
                         .HasForeignKey("QuestionId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Question");
@@ -748,7 +749,7 @@ namespace LearningSystem.Infrastructure.Migrations
                     b.HasOne("LearningSystem.Domain.Entities.Quiz", "Quiz")
                         .WithMany("Questions")
                         .HasForeignKey("QuizId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("QuestionType");

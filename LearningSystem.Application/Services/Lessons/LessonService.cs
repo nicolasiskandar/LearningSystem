@@ -54,14 +54,14 @@ public class LessonService : ILessonService
         return _lessonMapper.Map(lessons);
     }
 
-    public async Task<LessonResult> CreateLessonAsync(CreateLessonCommand command, ClaimsPrincipal user)
+    public async Task<LessonResult> CreateLessonAsync(CreateLessonCommand command, ClaimsPrincipal claimsPrincipal)
     {
-        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userId = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userId == null)
             throw new UnauthorizedAccessException("User is not authenticated.");
 
-        var isInstructor = user.IsInRole(Roles.Instructor.ToString());
-        var isAdmin = user.IsInRole(Roles.SuperAdmin.ToString());
+        var isInstructor = claimsPrincipal.IsInRole(Roles.Instructor.ToString());
+        var isAdmin = claimsPrincipal.IsInRole(Roles.SuperAdmin.ToString());
 
         if (!isInstructor && !isAdmin)
             throw new ForbiddenExcception("User must be an instructor or admin to create a lesson.");
@@ -87,17 +87,17 @@ public class LessonService : ILessonService
         return _lessonMapper.Map(lesson);
     }
 
-    public async Task<LessonResult> UpdateLessonAsync(UpdateLessonCommand command, ClaimsPrincipal user)
+    public async Task<LessonResult> UpdateLessonAsync(UpdateLessonCommand command, ClaimsPrincipal claimsPrincipal)
     {
         var lesson = await _lessonRepository.GetLessonByIdAsync(command.Id);
         if (lesson == null)
             throw new LessonNotFoundException(command.Id);
         
-        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userId = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userId == null)
             throw new UnauthorizedAccessException("User is not authenticated.");
 
-        var isAdmin = user.IsInRole(Roles.SuperAdmin.ToString());
+        var isAdmin = claimsPrincipal.IsInRole(Roles.SuperAdmin.ToString());
 
         if (!isAdmin && lesson.CreatedBy.ToString() != userId)
             throw new ForbiddenExcception("You are not authorized to update this lesson.");
@@ -112,23 +112,22 @@ public class LessonService : ILessonService
         if (existsLessonWithSameOrder)
             throw new DuplicateLessonOrderException(command.CourseId, command.Order);
 
-
         _lessonMapper.Map(command, lesson);
         await _lessonRepository.UpdateLessonAsync(lesson);
         return _lessonMapper.Map(lesson);
     }
 
-    public async Task DeleteLessonAsync(int id, ClaimsPrincipal user)
+    public async Task DeleteLessonAsync(int id, ClaimsPrincipal claimsPrincipal)
     {
         var lesson = await _lessonRepository.GetLessonByIdAsync(id);
         if (lesson == null)
             throw new LessonNotFoundException(id);
 
-        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userId = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (userId == null)
             throw new UnauthorizedAccessException("User is not authenticated.");
 
-        var isAdmin = user.IsInRole(Roles.SuperAdmin.ToString());
+        var isAdmin = claimsPrincipal.IsInRole(Roles.SuperAdmin.ToString());
 
         if (!isAdmin && lesson.CreatedBy.ToString() != userId)
             throw new ForbiddenExcception("You are not authorized to delete this lesson.");

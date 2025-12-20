@@ -29,5 +29,10 @@ public class QuizConfiguration : IEntityTypeConfiguration<Quiz>
                .WithMany(l => l.Quizzes)
                .HasForeignKey(q => q.LessonId)
                .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasMany(q => q.Questions)
+               .WithOne(q => q.Quiz)
+               .HasForeignKey(q => q.QuizId)
+               .OnDelete(DeleteBehavior.Cascade);
     }
 }

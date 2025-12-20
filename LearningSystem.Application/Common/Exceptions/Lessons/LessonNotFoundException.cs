@@ -1,5 +1,3 @@
-using LearningSystem.Application.Common.Exceptions;
-
 namespace LearningSystem.Application.Common.Exceptions.Lessons;
 
 public class LessonNotFoundException : NotFoundException

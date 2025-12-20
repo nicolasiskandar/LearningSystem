@@ -131,6 +131,18 @@ public class UserService : IUserService
 
     }
 
+    public async Task<UserResult> GetMeAsync()
+    {
+        var userIdClaim = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier);
+        if (userIdClaim == null)
+            throw new UserNotFoundException();
+
+        if (!int.TryParse(userIdClaim.Value, out int userId))
+            throw new UserNotFoundException();
+
+        return await GetUserByIdAsync(userId);
+    }
+
     private async Task<User?> GetUserFromRepo(int id)
     {
         var user = await _userManager.FindByIdAsync(id.ToString());
@@ -152,17 +164,5 @@ public class UserService : IUserService
     {
         var existingUser = _userManager.Users.FirstOrDefault(u => u.Email == command.Email);
         return existingUser != null && existingUser.Id != command.Id;
-    }
-
-    public async Task<UserResult> GetMeAsync()
-    {
-        var userIdClaim = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier);
-        if (userIdClaim == null)
-            throw new UserNotFoundException();
-
-        if (!int.TryParse(userIdClaim.Value, out int userId))
-            throw new UserNotFoundException();
-
-        return await GetUserByIdAsync(userId);
     }
 }
