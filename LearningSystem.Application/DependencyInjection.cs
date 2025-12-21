@@ -14,8 +14,11 @@ using LearningSystem.Application.Services.Lessons;
 using LearningSystem.Application.Services.Questions;
 using LearningSystem.Application.Services.QuestionTypes;
 using LearningSystem.Application.Services.Quizzes;
+using LearningSystem.Application.Services.QuizAttempts;
 using LearningSystem.Application.Services.Users;
 using Microsoft.Extensions.DependencyInjection;
+using LearningSystem.Application.Mappers.QuizAttempts;
+
 
 namespace LearningSystem.Application;
 
@@ -32,6 +35,7 @@ public static class DependencyInjection
         services.AddScoped<IQuestionService, QuestionService>();
         services.AddScoped<IQuestionTypeService, QuestionTypeService>();
         services.AddScoped<IQuizService, QuizService>();
+        services.AddScoped<IQuizAttemptService, QuizAttemptService>();
 
         services.AddScoped<ICategoryMapper, CategoryMapper>();
         services.AddScoped<ICourseMapper, CourseMapper>();
@@ -41,6 +45,7 @@ public static class DependencyInjection
         services.AddScoped<IQuestionMapper, QuestionMapper>();
         services.AddScoped<IQuizMapper, QuizMapper>();
         services.AddScoped<IQuestionTypeMapper, QuestionTypeMapper>();
+        services.AddScoped<IQuizAttemptMapper, QuizAttemptMapper>();
 
         return services;
     }

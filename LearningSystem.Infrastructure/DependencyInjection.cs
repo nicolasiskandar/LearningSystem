@@ -33,6 +33,8 @@ public static class DependencyInjection
         services.AddScoped<IQuestionRepository, QuestionRepository>();
         services.AddScoped<IQuestionTypeRepository, QuestionTypeRepository>();
         services.AddScoped<IQuizRepository, QuizRepository>();
+        services.AddScoped<IQuizAttemptRepository, QuizAttemptRepository>();
+        services.AddScoped<IQuizAttemptAnswerRepository, QuizAttemptAnswerRepository>();
 
         services.AddSingleton<PasswordHasher<object>>();
         services.AddScoped<IPasswordHasher, PasswordHasher>();

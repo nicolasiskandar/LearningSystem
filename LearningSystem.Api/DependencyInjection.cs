@@ -7,6 +7,7 @@ using LearningSystem.Api.Mappers.Certificates;
 using LearningSystem.Api.Mappers.Users;
 using LearningSystem.Api.Mappers.Questions;
 using LearningSystem.Api.Mappers.Quizzes;
+using LearningSystem.Api.Mappers.QuizAttempts;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -23,6 +24,7 @@ public static class DependencyInjection
         services.AddScoped<IQuestionMapper, QuestionMapper>();
         services.AddScoped<IQuizMapper, QuizMapper>();
         services.AddScoped<IQuestionTypeMapper, QuestionTypeMapper>();
+        services.AddScoped<IQuizAttemptMapper, QuizAttemptMapper>();
 
         services.AddHttpContextAccessor();
 
