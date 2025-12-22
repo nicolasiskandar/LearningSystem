@@ -3,14 +3,12 @@ using LearningSystem.Api.Mappers.Lessons;
 using LearningSystem.Application.Services.Lessons;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.RateLimiting;
 
 namespace LearningSystem.Api.Controllers;
 
 [Authorize(Roles = "Instructor,SuperAdmin")]
 [Route("api/lessons")]
 [ApiController]
-[EnableRateLimiting("fixed")]
 public class LessonsController : ControllerBase
 {
     private readonly ILessonService _lessonService;

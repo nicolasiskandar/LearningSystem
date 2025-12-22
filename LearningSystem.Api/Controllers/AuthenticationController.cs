@@ -2,13 +2,11 @@
 using LearningSystem.Api.Mappers.Authentication;
 using LearningSystem.Application.Services.Auth;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.RateLimiting;
 
 namespace LearningSystem.Api.Controllers;
 
 [ApiController]
 [Route("api/auth")]
-[EnableRateLimiting("fixed")]
 public class AuthenticationController : ControllerBase
 {
     private readonly IAuthService _authService;

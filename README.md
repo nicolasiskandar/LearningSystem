@@ -9,5 +9,9 @@ dotnet ef database update --project LearningSystem.Infrastructure --startup-proj
 ```
 
 ```bash
+docker compose up -d
+```
+
+```bash
 dotnet run --project LearningSystem.Api
 ```

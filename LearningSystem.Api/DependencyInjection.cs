@@ -11,7 +11,6 @@ using LearningSystem.Api.Mappers.QuizAttempts;
 using LearningSystem.Api.Mappers.Quizzes;
 using LearningSystem.Api.Mappers.Users;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.OpenApi.Models;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -37,7 +36,7 @@ public static class DependencyInjection
         {
             options.Filters.Add<ValidationFilter>();
         });
-        
+
         services.Configure<ApiBehaviorOptions>(options =>
         {
             options.SuppressModelStateInvalidFilter = true;
@@ -87,12 +86,23 @@ public static class DependencyInjection
                 return new ValueTask();
             };
 
-            options.AddFixedWindowLimiter("fixed", opt =>
+            options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
             {
-                opt.PermitLimit = rateLimitingOptions.GetValue<int>("PermitLimit");
-                opt.Window = rateLimitingOptions.GetValue<TimeSpan>("Window");
-                opt.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
-                opt.QueueLimit = rateLimitingOptions.GetValue<int>("QueueLimit");
+                var path = httpContext.Request.Path.ToString().ToLower();
+                var userId = httpContext.User.Identity?.Name ?? "anonymous";
+
+                var partitionKey = $"{userId}:{path}";
+
+                return RateLimitPartition.GetSlidingWindowLimiter(
+                    partitionKey,
+                    factory: _ => new SlidingWindowRateLimiterOptions
+                    {
+                        PermitLimit = rateLimitingOptions.GetValue<int>("PermitLimit"),
+                        Window = rateLimitingOptions.GetValue<TimeSpan>("Window"),
+                        SegmentsPerWindow = rateLimitingOptions.GetValue<int>("SegmentsPerWindow"),
+                        QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                        QueueLimit = rateLimitingOptions.GetValue<int>("QueueLimit")
+                    });
             });
         });
 

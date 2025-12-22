@@ -3,14 +3,12 @@ using LearningSystem.Api.Mappers.Categories;
 using LearningSystem.Application.Services.Categories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.RateLimiting;
 
 namespace LearningSystem.Api.Controllers;
 
-[Authorize(Roles = "Instructor,SuperAdmin")]
+[Authorize]
 [Route("api/categories")]
 [ApiController]
-[EnableRateLimiting("fixed")]
 public class CategoriesController : ControllerBase
 {
     private readonly ICategoryService _categoryService;
@@ -39,7 +37,6 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpPost]
-    [Authorize]
     public async Task<ActionResult<CategoryDto>> Create([FromBody] CreateCategoryDto dto)
     {
         var command = _categoryMapper.Map(dto);
@@ -48,6 +45,7 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Instructor,SuperAdmin")]
     public async Task<ActionResult<CategoryDto>> Update(int id, [FromBody] UpdateCategoryDto dto)
     {
         var command = _categoryMapper.Map(dto, id);
@@ -56,6 +54,7 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Instructor,SuperAdmin")]
     public async Task<IActionResult> Delete(int id)
     {
         await _categoryService.DeleteCategoryAsync(id);

@@ -3,14 +3,12 @@ using LearningSystem.Api.Mappers.Questions;
 using LearningSystem.Application.Services.Questions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.RateLimiting;
 
 namespace LearningSystem.Api.Controllers;
 
 [Authorize(Roles = "Instructor,SuperAdmin")]
 [Route("api/[controller]")]
 [ApiController]
-[EnableRateLimiting("fixed")]
 public class QuestionsController : ControllerBase
 {
     private readonly IQuestionService _questionService;

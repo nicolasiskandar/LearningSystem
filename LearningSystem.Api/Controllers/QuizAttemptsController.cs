@@ -3,14 +3,12 @@ using LearningSystem.Api.Mappers.QuizAttempts;
 using LearningSystem.Application.Services.QuizAttempts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.RateLimiting;
 
 namespace LearningSystem.Api.Controllers;
 
 [Authorize]
 [Route("api/[controller]")]
 [ApiController]
-[EnableRateLimiting("fixed")]
 public class QuizAttemptsController : ControllerBase
 {
     private readonly IQuizAttemptService _quizAttemptService;

@@ -3,7 +3,6 @@ using LearningSystem.Api.Mappers.Courses;
 using LearningSystem.Application.Services.Courses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.RateLimiting;
 using System.Security.Claims;
 
 namespace LearningSystem.Api.Controllers;
@@ -11,7 +10,6 @@ namespace LearningSystem.Api.Controllers;
 [Authorize]
 [Route("api/[controller]")]
 [ApiController]
-[EnableRateLimiting("fixed")]
 public class CoursesController : ControllerBase
 {
     private readonly ICourseService _courseService;

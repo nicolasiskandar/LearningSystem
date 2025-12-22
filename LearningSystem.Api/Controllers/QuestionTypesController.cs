@@ -3,14 +3,12 @@ using LearningSystem.Api.Mappers.QuestionTypes;
 using LearningSystem.Application.Services.QuestionTypes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.RateLimiting;
 
 namespace LearningSystem.Api.Controllers;
 
 [Authorize]
 [Route("api/[controller]")]
 [ApiController]
-[EnableRateLimiting("fixed")]
 public class QuestionTypesController : ControllerBase
 {
     private readonly IQuestionTypeService _questionTypeService;

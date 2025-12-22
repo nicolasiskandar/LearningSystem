@@ -9,7 +9,6 @@ namespace LearningSystem.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-[EnableRateLimiting("fixed")]
 public class CertificatesController : ControllerBase
 {
     private readonly ICertificateService _certificateService;
