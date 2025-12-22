@@ -3,12 +3,14 @@ using LearningSystem.Api.Mappers.Categories;
 using LearningSystem.Application.Services.Categories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace LearningSystem.Api.Controllers;
 
 [Authorize(Roles = "Instructor,SuperAdmin")]
 [Route("api/categories")]
 [ApiController]
+[EnableRateLimiting("fixed")]
 public class CategoriesController : ControllerBase
 {
     private readonly ICategoryService _categoryService;

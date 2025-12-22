@@ -3,11 +3,13 @@ using LearningSystem.Api.Mappers.Certificates;
 using LearningSystem.Application.Services.Certificates;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace LearningSystem.Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[EnableRateLimiting("fixed")]
 public class CertificatesController : ControllerBase
 {
     private readonly ICertificateService _certificateService;
