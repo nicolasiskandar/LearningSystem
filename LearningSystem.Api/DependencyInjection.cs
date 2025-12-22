@@ -79,6 +79,14 @@ public static class DependencyInjection
 
             options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 
+            options.OnRejected = (context, cancellationToken) =>
+            {
+                context.HttpContext.RequestServices.GetRequiredService<ILoggerFactory>()
+                    .CreateLogger("Microsoft.AspNetCore.RateLimiting")
+                    .LogWarning($"Request rejected by rate limiter: {context.HttpContext.Request.Path}");
+                return new ValueTask();
+            };
+
             options.AddFixedWindowLimiter("fixed", opt =>
             {
                 opt.PermitLimit = rateLimitingOptions.GetValue<int>("PermitLimit");

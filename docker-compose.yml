@@ -19,5 +19,14 @@ services:
     volumes:
       - grafana-storage:/var/lib/grafana
 
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - loki-storage:/loki
+
 volumes:
   grafana-storage: {}
+  loki-storage: {}
