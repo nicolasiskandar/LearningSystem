@@ -88,10 +88,11 @@ public static class DependencyInjection
 
             options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
             {
-                var path = httpContext.Request.Path.ToString().ToLower();
+                var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
                 var userId = httpContext.User.Identity?.Name ?? "anonymous";
+                var path = httpContext.Request.Path.ToString().ToLower();
 
-                var partitionKey = $"{userId}:{path}";
+                var partitionKey = $"{userId}:{path}:{ip}";
 
                 return RateLimitPartition.GetSlidingWindowLimiter(
                     partitionKey,
