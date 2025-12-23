@@ -1,4 +1,3 @@
-using System.Threading.RateLimiting;
 using LearningSystem.Api.Filters;
 using LearningSystem.Api.Mappers.Authentication;
 using LearningSystem.Api.Mappers.Categories;
@@ -12,6 +11,8 @@ using LearningSystem.Api.Mappers.Quizzes;
 using LearningSystem.Api.Mappers.Users;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
+using OpenTelemetry.Trace;
+using System.Threading.RateLimiting;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -106,6 +107,17 @@ public static class DependencyInjection
                     });
             });
         });
+
+        services.AddOpenTelemetry()
+        .WithTracing(tracing => tracing
+            .AddAspNetCoreInstrumentation()
+            .AddHttpClientInstrumentation()
+            .AddEntityFrameworkCoreInstrumentation()
+            .AddSqlClientInstrumentation()
+            .AddOtlpExporter(options =>
+            {
+                options.Endpoint = new Uri(configuration["Otlp:Endpoint"] ?? "http://localhost:4317");
+            }));
 
         return services;
     }
