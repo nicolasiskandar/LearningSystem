@@ -10,6 +10,8 @@ using LearningSystem.Application.Results.QuizAttempts;
 using LearningSystem.Domain.Entities;
 using System.Security.Claims;
 
+using LearningSystem.Application.Common.Caching;
+
 namespace LearningSystem.Application.Services.QuizAttempts;
 
 public class QuizAttemptService : IQuizAttemptService
@@ -21,6 +23,7 @@ public class QuizAttemptService : IQuizAttemptService
     private readonly IUserRepository _userRepository;
     private readonly IUserCourseRepository _userCourseRepository;
     private readonly IQuizAttemptMapper _quizAttemptMapper;
+    private readonly ICacheService _cacheService;
 
     public QuizAttemptService(
         IQuizAttemptRepository quizAttemptRepository,
@@ -29,7 +32,8 @@ public class QuizAttemptService : IQuizAttemptService
         IQuizRepository quizRepository,
         IUserRepository userRepository,
         IUserCourseRepository userCourseRepository,
-        IQuizAttemptMapper quizAttemptMapper)
+        IQuizAttemptMapper quizAttemptMapper,
+        ICacheService cacheService)
     {
         _quizAttemptRepository = quizAttemptRepository;
         _quizAttemptAnswerRepository = quizAttemptAnswerRepository;
@@ -38,6 +42,7 @@ public class QuizAttemptService : IQuizAttemptService
         _userRepository = userRepository;
         _userCourseRepository = userCourseRepository;
         _quizAttemptMapper = quizAttemptMapper;
+        _cacheService = cacheService;
     }
 
     public async Task<QuizAttemptResult> CreateQuizAttemptAsync(CreateQuizAttemptCommand command, ClaimsPrincipal user)
@@ -69,22 +74,41 @@ public class QuizAttemptService : IQuizAttemptService
         };
 
         await _quizAttemptRepository.AddQuizAttemptAsync(quizAttempt);
+        
+        await _cacheService.RemoveAsync($"user-quizattempts-{userId}");
+
         return _quizAttemptMapper.Map(quizAttempt);
     }
 
     public async Task<QuizAttemptResult> GetQuizAttemptByIdAsync(int id)
     {
+        var cachedAttempt = await _cacheService.GetAsync<QuizAttemptResult>($"quizattempt-{id}");
+        if (cachedAttempt != null)
+            return cachedAttempt;
+
         var quizAttempt = await _quizAttemptRepository.GetQuizAttemptByIdAsync(id);
         if (quizAttempt == null)
             throw new QuizAttemptNotFoundException(id);
 
-        return _quizAttemptMapper.Map(quizAttempt);
+        var result = _quizAttemptMapper.Map(quizAttempt);
+        await _cacheService.SetAsync($"quizattempt-{id}", result);
+
+        return result;
     }
 
     public async Task<IEnumerable<QuizAttemptResult>> GetQuizAttemptByUserIdAsync(int userId)
     {
+        var cachedAttempts = await _cacheService.GetAsync<IEnumerable<QuizAttemptResult>>($"user-quizattempts-{userId}");
+        if (cachedAttempts != null)
+        {
+            return cachedAttempts;
+        }
+
         var quizAttempts = await _quizAttemptRepository.GetQuizAttemptsByUserIdAsync(userId);
-        return _quizAttemptMapper.Map(quizAttempts);
+        var result = _quizAttemptMapper.Map(quizAttempts);
+        await _cacheService.SetAsync($"user-quizattempts-{userId}", result);
+
+        return result;
     }
 
     public async Task<QuizAttemptResult> SubmitQuizAsync(SubmitQuizAttemptCommand command, ClaimsPrincipal user)
@@ -138,6 +162,9 @@ public class QuizAttemptService : IQuizAttemptService
 
         quizAttempt.Score = score;
         await _quizAttemptRepository.UpdateQuizAttemptAsync(quizAttempt);
+
+        await _cacheService.RemoveAsync($"quizattempt-{command.Id}");
+        await _cacheService.RemoveAsync($"user-quizattempts-{userId}");
 
         return _quizAttemptMapper.Map(quizAttempt);
     }

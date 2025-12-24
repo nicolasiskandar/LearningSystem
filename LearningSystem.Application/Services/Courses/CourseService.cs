@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using LearningSystem.Application.Common.Exceptions.UserCourse;
 using System.Security.Claims;
 using LearningSystem.Application.Common.Exceptions;
+using LearningSystem.Application.Common.Caching;
 
 namespace LearningSystem.Application.Services.Courses;
 
@@ -22,6 +23,7 @@ public class CourseService : ICourseService
     private readonly UserManager<User> _userManager;
     private readonly IUserRepository _userRepository;
     private readonly IUserCourseRepository _userCourseRepository;
+    private readonly ICacheService _cacheService;
 
     public CourseService(
         ICourseRepository courseRepository,
@@ -29,7 +31,8 @@ public class CourseService : ICourseService
         ICourseMapper courseMapper,
         UserManager<User> userManager,
         IUserRepository userRepository,
-        IUserCourseRepository userCourseRepository)
+        IUserCourseRepository userCourseRepository,
+        ICacheService cacheService)
     {
         _courseRepository = courseRepository;
         _categoryRepository = categoryRepository;
@@ -37,6 +40,7 @@ public class CourseService : ICourseService
         _userManager = userManager;
         _userRepository = userRepository;
         _userCourseRepository = userCourseRepository;
+        _cacheService = cacheService;
     }
 
     public async Task EnrollUserInCourse(int userId, int courseId)
@@ -64,17 +68,31 @@ public class CourseService : ICourseService
 
     public async Task<CourseResult> GetCourseByIdAsync(int id)
     {
+        var cachedCourse = await _cacheService.GetAsync<CourseResult>($"course-{id}");
+        if (cachedCourse != null)
+            return cachedCourse;
+
         var course = await _courseRepository.GetCourseByIdAsync(id);
         if (course == null)
             throw new CourseNotFoundException(id);
 
-        return _courseMapper.Map(course);
+        var result = _courseMapper.Map(course);
+        await _cacheService.SetAsync($"course-{id}", result);
+
+        return result;
     }
 
     public async Task<IEnumerable<CourseResult>> GetCoursesAsync()
     {
+        var cachedCourses = await _cacheService.GetAsync<IEnumerable<CourseResult>>("courses-all");
+        if (cachedCourses != null)
+            return cachedCourses;
+
         var courses = await _courseRepository.GetAllCoursesAsync();
-        return _courseMapper.Map(courses);
+        var result = _courseMapper.Map(courses);
+        await _cacheService.SetAsync("courses-all", result);
+
+        return result;
     }
 
     public async Task<CourseResult> AddCourseAsync(CreateCourseCommand command, ClaimsPrincipal claimsPrincipal)
@@ -102,6 +120,7 @@ public class CourseService : ICourseService
         course.CreatedAt = DateTime.UtcNow;
 
         await _courseRepository.AddCourseAsync(course);
+        await _cacheService.RemoveAsync("courses-all");
 
         return _courseMapper.Map(course);
     }
@@ -127,6 +146,9 @@ public class CourseService : ICourseService
 
         _courseMapper.Map(command, course);
         await _courseRepository.UpdateCourseAsync(course);
+        
+        await _cacheService.RemoveAsync($"course-{command.Id}");
+        await _cacheService.RemoveAsync("courses-all");
 
         return _courseMapper.Map(course);
     }
@@ -147,6 +169,9 @@ public class CourseService : ICourseService
             throw new ForbiddenExcception("You are not authorized to delete this course");
 
         await _courseRepository.RemoveCourseAsync(course);
+        
+        await _cacheService.RemoveAsync($"course-{id}");
+        await _cacheService.RemoveAsync("courses-all");
     }
 
     private async Task TransformStudentToInstructor(User creator)

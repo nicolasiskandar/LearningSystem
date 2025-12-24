@@ -6,6 +6,8 @@ using LearningSystem.Application.Persistence;
 using LearningSystem.Application.Results.Certificates;
 using LearningSystem.Domain.Entities;
 
+using LearningSystem.Application.Common.Caching;
+
 namespace LearningSystem.Application.Services.Certificates;
 
 public class CertificateService : ICertificateService
@@ -15,19 +17,22 @@ public class CertificateService : ICertificateService
     private readonly ICourseRepository _courseRepository;
     private readonly IUserRepository _userRepository;
     private readonly ILessonCompletedRepository _lessonCompletedRepository;
+    private readonly ICacheService _cacheService;
 
     public CertificateService(
         ICertificateRepository certificateRepository, 
         ICertificateMapper certificateMapper,
         ICourseRepository courseRepository, 
         IUserRepository userRepository,
-        ILessonCompletedRepository lessonCompletedRepository)
+        ILessonCompletedRepository lessonCompletedRepository,
+        ICacheService cacheService)
     {
         _certificateRepository = certificateRepository;
         _certificateMapper = certificateMapper;
         _courseRepository = courseRepository;
         _userRepository = userRepository;
         _lessonCompletedRepository = lessonCompletedRepository;
+        _cacheService = cacheService;
     }
 
     public async Task<CertificateResult> GenerateCertificateAsync(int userId, int courseId)
@@ -62,22 +67,39 @@ public class CertificateService : ICertificateService
 
         await _certificateRepository.AddAsync(certificate);
 
+        await _cacheService.RemoveAsync($"user-certificates-{userId}");
+        await _cacheService.RemoveAsync($"certificate-{userId}-{courseId}");
+
         return _certificateMapper.Map(certificate);
     }
 
     public async Task<CertificateResult?> GetCertificateAsync(int userId, int courseId)
     {
+        var cachedCertificate = await _cacheService.GetAsync<CertificateResult>($"certificate-{userId}-{courseId}");
+        if (cachedCertificate != null)
+            return cachedCertificate;
+
         var certificate = await _certificateRepository.GetByUserAndCourse(userId, courseId);
         if (certificate == null)
             throw new CertificateNotFoundException(userId, courseId);
 
-        return _certificateMapper.Map(certificate);
+        var result = _certificateMapper.Map(certificate);
+        await _cacheService.SetAsync($"certificate-{userId}-{courseId}", result);
+
+        return result;
     }
 
     public async Task<IEnumerable<CertificateResult>> GetUserCertificatesAsync(int userId)
     {
+        var cachedCertificates = await _cacheService.GetAsync<IEnumerable<CertificateResult>>($"user-certificates-{userId}");
+        if (cachedCertificates != null)
+            return cachedCertificates;
+
         var certificates = await _certificateRepository.GetByUserIdAsync(userId);
-        return _certificateMapper.Map(certificates);
+        var result = _certificateMapper.Map(certificates);
+        await _cacheService.SetAsync($"user-certificates-{userId}", result);
+
+        return result;
     }
 
     private async Task<bool> CheckIfAllLessonsCompletedAsync(int userId, int courseId)

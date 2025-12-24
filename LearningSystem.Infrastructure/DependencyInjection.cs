@@ -12,6 +12,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
+using LearningSystem.Application.Common.Caching;
+using LearningSystem.Infrastructure.Services.Caching;
+using StackExchange.Redis;
+
 namespace LearningSystem.Infrastructure;
 
 public static class DependencyInjection
@@ -20,6 +24,10 @@ public static class DependencyInjection
       this IServiceCollection services,
       ConfigurationManager configuration)
     {
+        services.AddSingleton<IConnectionMultiplexer>(sp =>
+            ConnectionMultiplexer.Connect(configuration.GetConnectionString("Redis")!));
+        services.AddScoped<ICacheService, CacheService>();
+
         services.AddDbContext<LearningSystemDbContext>(options =>
            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
@@ -40,7 +48,7 @@ public static class DependencyInjection
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
 
-        services.AddIdentity<User, Role>(options =>
+        services.AddIdentity<User, LearningSystem.Domain.Entities.Role>(options =>
         {
             options.Password.RequiredLength = 8;
             options.Password.RequireDigit = true;

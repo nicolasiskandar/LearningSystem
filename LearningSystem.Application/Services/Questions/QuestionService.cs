@@ -11,6 +11,8 @@ using LearningSystem.Application.Results.Questions;
 using LearningSystem.Domain.Enums;
 using System.Security.Claims;
 
+using LearningSystem.Application.Common.Caching;
+
 namespace LearningSystem.Application.Services.Questions;
 
 public class QuestionService : IQuestionService
@@ -21,6 +23,7 @@ public class QuestionService : IQuestionService
     private readonly ICourseRepository _courseRepository;
     private readonly IQuestionTypeRepository _questionTypeRepository;
     private readonly IQuestionMapper _questionMapper;
+    private readonly ICacheService _cacheService;
 
     public QuestionService(
         IQuestionRepository questionRepository,
@@ -28,7 +31,8 @@ public class QuestionService : IQuestionService
         ILessonRepository lessonRepository,
         ICourseRepository courseRepository,
         IQuestionTypeRepository questionTypeRepository,
-        IQuestionMapper questionMapper)
+        IQuestionMapper questionMapper,
+        ICacheService cacheService)
     {
         _questionRepository = questionRepository;
         _quizRepository = quizRepository;
@@ -36,31 +40,53 @@ public class QuestionService : IQuestionService
         _courseRepository = courseRepository;
         _questionTypeRepository = questionTypeRepository;
         _questionMapper = questionMapper;
+        _cacheService = cacheService;
     }
 
     public async Task<QuestionResult> GetQuestionByIdAsync(int id)
     {
+        var cachedQuestion = await _cacheService.GetAsync<QuestionResult>($"question-{id}");
+        if (cachedQuestion != null)
+            return cachedQuestion;
+
         var question = await _questionRepository.GetQuestionByIdAsync(id);
         if (question == null)
             throw new QuestionNotFoundException(id);
 
-        return _questionMapper.Map(question);
+        var result = _questionMapper.Map(question);
+        await _cacheService.SetAsync($"question-{id}", result);
+
+        return result;
     }
 
     public async Task<IEnumerable<QuestionResult>> GetQuestionsAsync()
     {
+        var cachedQuestions = await _cacheService.GetAsync<IEnumerable<QuestionResult>>("questions-all");
+        if (cachedQuestions != null)
+            return cachedQuestions;
+
         var questions = await _questionRepository.GetAllQuestionsAsync();
-        return _questionMapper.Map(questions);
+        var result = _questionMapper.Map(questions);
+        await _cacheService.SetAsync("questions-all", result);
+
+        return result;
     }
 
     public async Task<IEnumerable<QuestionResult>> GetQuestionsByQuizIdAsync(int quizId)
     {
+        var cachedQuestions = await _cacheService.GetAsync<IEnumerable<QuestionResult>>($"questions-quiz-{quizId}");
+        if (cachedQuestions != null)
+            return cachedQuestions;
+
         var quiz = await _quizRepository.GetQuizByIdAsync(quizId);
         if (quiz == null)
             throw new QuizNotFoundException(quizId);
 
         var questions = await _questionRepository.GetQuestionsByQuizIdAsync(quizId);
-        return _questionMapper.Map(questions);
+        var result = _questionMapper.Map(questions);
+        await _cacheService.SetAsync($"questions-quiz-{quizId}", result);
+
+        return result;
     }
 
     public async Task<QuestionResult> AddQuestionAsync(CreateQuestionCommand command, ClaimsPrincipal claimsPrincipal)
@@ -97,6 +123,10 @@ public class QuestionService : IQuestionService
 
         var question = _questionMapper.Map(command);
         await _questionRepository.AddQuestionAsync(question);
+
+        await _cacheService.RemoveAsync("questions-all");
+        await _cacheService.RemoveAsync($"questions-quiz-{command.QuizId}");
+        await _cacheService.RemoveAsync($"quiz-{command.QuizId}");
 
         return _questionMapper.Map(question);
     }
@@ -139,6 +169,11 @@ public class QuestionService : IQuestionService
         _questionMapper.Map(command, existingQuestion);
         await _questionRepository.UpdateQuestionAsync(existingQuestion);
 
+        await _cacheService.RemoveAsync($"question-{existingQuestion.Id}");
+        await _cacheService.RemoveAsync("questions-all");
+        await _cacheService.RemoveAsync($"questions-quiz-{existingQuestion.QuizId}");
+        await _cacheService.RemoveAsync($"quiz-{existingQuestion.QuizId}");
+
         return _questionMapper.Map(existingQuestion);
     }
 
@@ -170,5 +205,10 @@ public class QuestionService : IQuestionService
             throw new ForbiddenExcception("You are not authorized to create this question.");
 
         await _questionRepository.RemoveQuestionAsync(question);
+
+        await _cacheService.RemoveAsync($"question-{id}");
+        await _cacheService.RemoveAsync("questions-all");
+        await _cacheService.RemoveAsync($"questions-quiz-{question.QuizId}");
+        await _cacheService.RemoveAsync($"quiz-{question.QuizId}");
     }
 }

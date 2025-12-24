@@ -9,6 +9,8 @@ using LearningSystem.Application.Results.Quizzes;
 using LearningSystem.Domain.Enums;
 using System.Security.Claims;
 
+using LearningSystem.Application.Common.Caching;
+
 namespace LearningSystem.Application.Services.Quizzes;
 
 public class QuizService : IQuizService
@@ -17,32 +19,49 @@ public class QuizService : IQuizService
     private readonly ICourseRepository _courseRepository;
     private readonly ILessonRepository _lessonRepository;
     private readonly IQuizMapper _quizMapper;
+    private readonly ICacheService _cacheService;
 
     public QuizService(
         IQuizRepository quizRepository,
         ICourseRepository courseRepository,
         ILessonRepository lessonRepository,
-        IQuizMapper quizMapper)
+        IQuizMapper quizMapper,
+        ICacheService cacheService)
     {
         _quizRepository = quizRepository;
         _courseRepository = courseRepository;
         _lessonRepository = lessonRepository;
         _quizMapper = quizMapper;
+        _cacheService = cacheService;
     }
 
     public async Task<QuizResult> GetQuizByIdAsync(int id)
     {
+        var cachedQuiz = await _cacheService.GetAsync<QuizResult>($"quiz-{id}");
+        if (cachedQuiz != null)
+            return cachedQuiz;
+
         var quiz = await _quizRepository.GetQuizByIdAsync(id);
         if (quiz == null)
             throw new QuizNotFoundException(id);
 
-        return _quizMapper.Map(quiz);
+        var result = _quizMapper.Map(quiz);
+        await _cacheService.SetAsync($"quiz-{id}", result);
+
+        return result;
     }
 
     public async Task<IEnumerable<QuizResult>> GetQuizzesAsync()
     {
+        var cachedQuizzes = await _cacheService.GetAsync<IEnumerable<QuizResult>>("quizzes-all");
+        if (cachedQuizzes != null)
+            return cachedQuizzes;
+
         var quizzes = await _quizRepository.GetAllQuizzesAsync();
-        return _quizMapper.Map(quizzes);
+        var result = _quizMapper.Map(quizzes);
+        await _cacheService.SetAsync("quizzes-all", result);
+
+        return result;
     }
 
     public async Task<QuizResult> AddQuizAsync(CreateQuizCommand command, ClaimsPrincipal claimsPrincipal)
@@ -66,6 +85,8 @@ public class QuizService : IQuizService
 
         var quiz = _quizMapper.Map(command);
         await _quizRepository.AddQuizAsync(quiz);
+
+        await _cacheService.RemoveAsync("quizzes-all");
 
         return _quizMapper.Map(quiz);
     }
@@ -96,6 +117,9 @@ public class QuizService : IQuizService
         _quizMapper.Map(command, existingQuiz);
         await _quizRepository.UpdateQuizAsync(existingQuiz);
 
+        await _cacheService.RemoveAsync($"quiz-{existingQuiz.Id}");
+        await _cacheService.RemoveAsync("quizzes-all");
+
         return _quizMapper.Map(existingQuiz);
     }
 
@@ -123,5 +147,8 @@ public class QuizService : IQuizService
             throw new ForbiddenExcception("You are not authorized to delete this quiz.");
 
         await _quizRepository.RemoveQuizAsync(existingQuiz);
+        
+        await _cacheService.RemoveAsync($"quiz-{id}");
+        await _cacheService.RemoveAsync("quizzes-all");
     }
 }

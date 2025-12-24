@@ -9,6 +9,8 @@ using LearningSystem.Domain.Entities;
 using LearningSystem.Domain.Enums;
 using System.Security.Claims;
 
+using LearningSystem.Application.Common.Caching;
+
 namespace LearningSystem.Application.Services.Lessons;
 
 public class LessonService : ILessonService
@@ -18,40 +20,64 @@ public class LessonService : ILessonService
     private readonly ICourseRepository _courseRepository;
     private readonly IUserCourseRepository _userCourseRepository;
     private readonly ILessonCompletedRepository _lessonCompletedRepository;
+    private readonly ICacheService _cacheService;
 
     public LessonService(
         ILessonRepository lessonRepository,
         ILessonMapper lessonMapper,
         ICourseRepository courseRepository,
         IUserCourseRepository userCourseRepository,
-        ILessonCompletedRepository lessonCompletedRepository)
+        ILessonCompletedRepository lessonCompletedRepository,
+        ICacheService cacheService)
     {
         _lessonRepository = lessonRepository;
         _lessonMapper = lessonMapper;
         _courseRepository = courseRepository;
         _userCourseRepository = userCourseRepository;
         _lessonCompletedRepository = lessonCompletedRepository;
+        _cacheService = cacheService;
     }
 
     public async Task<IEnumerable<LessonResult>> GetAllLessonsAsync()
     {
+        var cachedLessons = await _cacheService.GetAsync<IEnumerable<LessonResult>>("lessons-all");
+        if (cachedLessons != null)
+            return cachedLessons;
+
         var lessons = await _lessonRepository.GetAllLessonsAsync();
-        return _lessonMapper.Map(lessons);
+        var result = _lessonMapper.Map(lessons);
+        await _cacheService.SetAsync("lessons-all", result);
+
+        return result;
     }
 
     public async Task<LessonResult> GetLessonByIdAsync(int id)
     {
+        var cachedLesson = await _cacheService.GetAsync<LessonResult>($"lesson-{id}");
+        if (cachedLesson != null)
+            return cachedLesson;
+
         var lesson = await _lessonRepository.GetLessonByIdAsync(id);
         if (lesson == null)
             throw new LessonNotFoundException(id);
 
-        return _lessonMapper.Map(lesson);
+        var result = _lessonMapper.Map(lesson);
+        await _cacheService.SetAsync($"lesson-{id}", result);
+
+        return result;
     }
 
     public async Task<IEnumerable<LessonResult>> GetLessonByCourseIdAsync(int courseId)
     {
+        var cachedLessons = await _cacheService.GetAsync<IEnumerable<LessonResult>>($"lessons-course-{courseId}");
+        if (cachedLessons != null)
+            return cachedLessons;
+
         var lessons = await _lessonRepository.GetLessonsByCourseIdAsync(courseId);
-        return _lessonMapper.Map(lessons);
+        var result = _lessonMapper.Map(lessons);
+        await _cacheService.SetAsync($"lessons-course-{courseId}", result);
+
+        return result;
     }
 
     public async Task<LessonResult> CreateLessonAsync(CreateLessonCommand command, ClaimsPrincipal claimsPrincipal)
@@ -84,6 +110,9 @@ public class LessonService : ILessonService
         lesson.CreatedBy = int.Parse(userId);
         await _lessonRepository.AddLessonAsync(lesson);
 
+        await _cacheService.RemoveAsync("lessons-all");
+        await _cacheService.RemoveAsync($"lessons-course-{command.CourseId}");
+
         return _lessonMapper.Map(lesson);
     }
 
@@ -114,6 +143,11 @@ public class LessonService : ILessonService
 
         _lessonMapper.Map(command, lesson);
         await _lessonRepository.UpdateLessonAsync(lesson);
+
+        await _cacheService.RemoveAsync($"lesson-{lesson.Id}");
+        await _cacheService.RemoveAsync("lessons-all");
+        await _cacheService.RemoveAsync($"lessons-course-{lesson.CourseId}");
+
         return _lessonMapper.Map(lesson);
     }
 
@@ -133,6 +167,10 @@ public class LessonService : ILessonService
             throw new ForbiddenExcception("You are not authorized to delete this lesson.");
 
         await _lessonRepository.RemoveLessonAsync(lesson);
+
+        await _cacheService.RemoveAsync($"lesson-{id}");
+        await _cacheService.RemoveAsync("lessons-all");
+        await _cacheService.RemoveAsync($"lessons-course-{lesson.CourseId}");
     }
 
     public async Task MarkLessonAsCompletedAsync(int lessonId, ClaimsPrincipal user)

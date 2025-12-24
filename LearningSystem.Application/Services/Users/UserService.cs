@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using LearningSystem.Application.Mappers.Lessons;
+using LearningSystem.Application.Common.Caching;
 
 namespace LearningSystem.Application.Services.Users;
 
@@ -21,10 +22,9 @@ public class UserService : IUserService
     private readonly UserManager<User> _userManager;
     private readonly IUserMapper _userMapper;
     private readonly ICourseMapper _courseMapper;
-    private readonly ILessonMapper _lessonMapper;
     private readonly ICourseRepository _courseRepository;
-    private readonly ILessonRepository _lessonRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly ICacheService _cacheService;
 
     public UserService(
         UserManager<User> userManager,
@@ -33,7 +33,8 @@ public class UserService : IUserService
         ILessonMapper lessonMapper,
         ICourseRepository courseRepository,
         ILessonRepository lessonRepository,
-        IHttpContextAccessor httpContextAccessor)
+        IHttpContextAccessor httpContextAccessor,
+        ICacheService cacheService)
     {
         _userManager = userManager;
         _userMapper = userMapper;
@@ -42,6 +43,7 @@ public class UserService : IUserService
         _courseRepository = courseRepository;
         _lessonRepository = lessonRepository;
         _httpContextAccessor = httpContextAccessor;
+        _cacheService = cacheService;
     }
 
     public async Task<UserResult> AddUserAsync(CreateUserCommand command)
@@ -59,20 +61,33 @@ public class UserService : IUserService
 
         await _userManager.AddToRoleAsync(user, Roles.Student.ToString());
 
+        await _cacheService.RemoveAsync("users-all");
+
         return await GetUserResult(user);
     }
 
     public async Task<UserResult> GetUserByIdAsync(int id)
     {
+        var cachedUser = await _cacheService.GetAsync<UserResult>($"user-{id}");
+        if (cachedUser != null)
+            return cachedUser;
+
         var user = await _userManager.FindByIdAsync(id.ToString());
         if (user == null)
             throw new UserNotFoundException(id);
 
-        return await GetUserResult(user); ;
+        var result = await GetUserResult(user);
+        await _cacheService.SetAsync($"user-{id}", result);
+
+        return result;
     }
 
     public async Task<IEnumerable<UserResult>> GetUsersAsync()
     {
+        var cachedUsers = await _cacheService.GetAsync<IEnumerable<UserResult>>("users-all");
+        if (cachedUsers != null)
+            return cachedUsers;
+
         var users = _userManager.Users.ToList();
         var results = new List<UserResult>();
 
@@ -81,6 +96,8 @@ public class UserService : IUserService
             var userResult = await GetUserResult(user);
             results.Add(userResult);
         }
+
+        await _cacheService.SetAsync("users-all", results);
 
         return results;
     }
@@ -118,6 +135,9 @@ public class UserService : IUserService
         if (!result.Succeeded)
             throw new UserUpdateFailedException();
 
+        await _cacheService.RemoveAsync($"user-{command.Id}");
+        await _cacheService.RemoveAsync("users-all");
+
         return await GetUserResult(user);
     }
 
@@ -129,6 +149,8 @@ public class UserService : IUserService
         if (!result.Succeeded)
             throw new UserDeleteFailedException();
 
+        await _cacheService.RemoveAsync($"user-{id}");
+        await _cacheService.RemoveAsync("users-all");
     }
 
     public async Task<UserResult> GetMeAsync()
