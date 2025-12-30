@@ -15,3 +15,7 @@ docker compose up -d
 ```bash
 dotnet run --project LearningSystem.Api
 ```
+
+```bash
+cd LearningSystem.Web && npm start
+```
