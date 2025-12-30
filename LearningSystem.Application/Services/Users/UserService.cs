@@ -12,7 +12,6 @@ using Microsoft.EntityFrameworkCore;
 
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
-using LearningSystem.Application.Mappers.Lessons;
 using LearningSystem.Application.Common.Caching;
 
 namespace LearningSystem.Application.Services.Users;
@@ -30,18 +29,14 @@ public class UserService : IUserService
         UserManager<User> userManager,
         IUserMapper userMapper,
         ICourseMapper courseMapper,
-        ILessonMapper lessonMapper,
         ICourseRepository courseRepository,
-        ILessonRepository lessonRepository,
         IHttpContextAccessor httpContextAccessor,
         ICacheService cacheService)
     {
         _userManager = userManager;
         _userMapper = userMapper;
         _courseMapper = courseMapper;
-        _lessonMapper = lessonMapper;
         _courseRepository = courseRepository;
-        _lessonRepository = lessonRepository;
         _httpContextAccessor = httpContextAccessor;
         _cacheService = cacheService;
     }
