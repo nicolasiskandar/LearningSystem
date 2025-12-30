@@ -1,66 +1,51 @@
-<nav class="app-header navbar navbar-expand bg-body">
-  <div class="container-fluid">
-    <ul class="sidebar-brand">
+<nav class="app-header">
+  <div class="header-content">
+    <div class="header-brand">
       <a href="/" class="brand-link">
-        <img src="assets/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image opacity-75" />
-        <span class="brand-text fw-light">LearningSystem</span>
+        <img src="logo.png" alt="AdminLTE Logo" class="brand-image" />
+        <span class="brand-text">LearningSystem</span>
       </a>
-    </ul>
-    <ul class="navbar-nav ms-auto">
-      <li class="nav-item">
-        <a
-          class="nav-link"
-          data-widget="navbar-search"
-          href="#"
-          role="button"
-          style="border: 1px solid black; border-radius: 20px"
-        >
-          <i class="bi bi-search"></i>
-          <input style="background-color: white; border: none" type="text" placeholder="Search" />
+    </div>
+
+    <div class="search-item">
+      <a class="search-link" href="#">
+        <i class="bi bi-search"></i>
+        <input class="search-input" type="text" placeholder="Search" />
+      </a>
+    </div>
+
+    <div class="header-actions">
+      <div class="user-menu-item">
+        <a href="#" class="user-link">
+          <img src="default-pfp.png" class="user-avatar" alt="User Image" />
+          <span class="user-name">Alexander Pierce</span>
         </a>
-      </li>
-    </ul>
-    <ul class="navbar-nav ms-auto">
-      <li class="nav-item dropdown user-menu">
-        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-          <img
-            src="assets/img/user2-160x160.jpg"
-            class="user-image rounded-circle shadow"
-            alt="User Image"
-          />
-          <span class="d-none d-md-inline">Alexander Pierce</span>
-        </a>
-        <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
-          <li class="user-header text-bg-primary">
-            <img
-              src="assets/img/user2-160x160.jpg"
-              class="rounded-circle shadow"
-              alt="User Image"
-            />
+
+        <div class="user-dropdown-menu">
+          <div class="dropdown-header">
+            <img src="default-pfp.png" class="dropdown-avatar" alt="User Image" />
             <p>
               Alexander Pierce - Web Developer
               <small>Member since Nov. 2023</small>
             </p>
-          </li>
-          <li class="user-body">
-            <div class="row">
-              <div class="col-4 text-center">
-                <a href="#">Followers</a>
-              </div>
-              <div class="col-4 text-center">
-                <a href="#">Sales</a>
-              </div>
-              <div class="col-4 text-center">
-                <a href="#">Friends</a>
-              </div>
+          </div>
+          <div class="dropdown-body">
+            <div class="stat-item">
+              <a href="#">Followers</a>
             </div>
-          </li>
-          <li class="user-footer">
-            <a href="./student-dashboard.html" class="btn btn-default btn-flat">Profile</a>
-            <a href="#" class="btn btn-default btn-flat float-end">Sign out</a>
-          </li>
-        </ul>
-      </li>
-    </ul>
+            <div class="stat-item">
+              <a href="#">Sales</a>
+            </div>
+            <div class="stat-item">
+              <a href="#">Friends</a>
+            </div>
+          </div>
+          <div class="dropdown-footer">
+            <a href="./student-dashboard.html" class="btn-profile">Profile</a>
+            <a href="#" class="btn-signout">Sign out</a>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </nav>
