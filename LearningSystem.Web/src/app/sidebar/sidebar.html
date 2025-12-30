@@ -1,0 +1,37 @@
+<aside class="app-sidebar">
+  <div class="sidebar-wrapper">
+    <nav class="sidebar-nav">
+      <ul class="nav-list">
+        <li class="nav-item">
+          <a
+            routerLink="/courses"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            class="nav-link"
+          >
+            <i class="nav-icon bi bi-speedometer2"></i>
+            <p>Dashboard</p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/my-courses" routerLinkActive="active" class="nav-link">
+            <i class="nav-icon bi bi-journal-richtext"></i>
+            <p>My Courses</p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/certificates" routerLinkActive="active" class="nav-link">
+            <i class="nav-icon bi bi-patch-check"></i>
+            <p>Certificates</p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="/settings" routerLinkActive="active" class="nav-link">
+            <i class="nav-icon bi bi-gear"></i>
+            <p>Settings</p>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</aside>

@@ -1,14 +1,14 @@
 <nav class="app-header">
   <div class="header-content">
     <div class="header-brand">
-      <a href="/" class="brand-link">
+      <a routerLink="/" class="brand-link">
         <img src="logo.png" alt="AdminLTE Logo" class="brand-image" />
         <span class="brand-text">LearningSystem</span>
       </a>
     </div>
 
     <div class="search-item">
-      <a class="search-link" href="#">
+      <a class="search-link" routerLink="#">
         <i class="bi bi-search"></i>
         <input class="search-input" type="text" placeholder="Search" />
       </a>
@@ -16,35 +16,10 @@
 
     <div class="header-actions">
       <div class="user-menu-item">
-        <a href="#" class="user-link">
+        <a routerLink="/profile" class="user-link">
           <img src="default-pfp.png" class="user-avatar" alt="User Image" />
           <span class="user-name">Alexander Pierce</span>
         </a>
-
-        <div class="user-dropdown-menu">
-          <div class="dropdown-header">
-            <img src="default-pfp.png" class="dropdown-avatar" alt="User Image" />
-            <p>
-              Alexander Pierce - Web Developer
-              <small>Member since Nov. 2023</small>
-            </p>
-          </div>
-          <div class="dropdown-body">
-            <div class="stat-item">
-              <a href="#">Followers</a>
-            </div>
-            <div class="stat-item">
-              <a href="#">Sales</a>
-            </div>
-            <div class="stat-item">
-              <a href="#">Friends</a>
-            </div>
-          </div>
-          <div class="dropdown-footer">
-            <a href="./student-dashboard.html" class="btn-profile">Profile</a>
-            <a href="#" class="btn-signout">Sign out</a>
-          </div>
-        </div>
       </div>
     </div>
   </div>

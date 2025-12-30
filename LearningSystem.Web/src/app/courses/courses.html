@@ -1,0 +1,65 @@
+<div class="app-content-header">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-6">
+        <h3 class="mb-0">Online Courses</h3>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="app-content">
+  <div class="container-fluid">
+    @if (isLoading()) {
+    <div class="d-flex justify-content-center my-5">
+      <div class="spinner"></div>
+    </div>
+    } @if (error()) {
+    <div class="alert alert-error">
+      {{ error() }}
+    </div>
+    }
+
+    <!-- Courses Grid -->
+    @if (!isLoading() && !error()) {
+    <div class="course-grid">
+      @for (course of courses(); track course.id) {
+      <div class="course-card">
+        <div class="course-thumbnail">
+          <img [src]="course.thumbnail || 'assets/img/photo1.png'" [alt]="course.title" />
+          <span class="badge-category">{{ course.category }}</span>
+        </div>
+
+        <div class="course-content">
+          <div class="course-meta">
+            <span class="difficulty" [class]="course.difficulty.toLowerCase()">
+              {{ course.difficulty }}
+            </span>
+          </div>
+
+          <h5 class="course-title" [title]="course.title">{{ course.title }}</h5>
+          <p class="course-description">{{ course.shortDescription }}</p>
+
+          <div class="course-footer">
+            <div class="course-instructor">
+              <i class="bi bi-person"></i>
+              <span>Instructor #{{ course.createdBy }}</span>
+            </div>
+            <button class="btn-view">View Course</button>
+          </div>
+        </div>
+      </div>
+      } @empty {
+      <div class="empty-state">
+        <p>No courses found.</p>
+      </div>
+      }
+    </div>
+
+    <!-- Load More Placeholder -->
+    <div class="load-more-container">
+      <button class="btn-load-more" (click)="loadCourses()">Load More</button>
+    </div>
+    }
+  </div>
+</div>
