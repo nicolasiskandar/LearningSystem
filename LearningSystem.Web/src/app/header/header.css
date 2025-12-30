@@ -1,0 +1,317 @@
+:host {
+  --header-bg: rgba(255, 255, 255, 0.95);
+  --header-height: 64px;
+  --header-border-color: rgba(0, 0, 0, 0.05);
+  --header-shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 4px 12px rgba(0, 0, 0, 0.03);
+
+  --primary-color: #3b82f6;
+  --primary-hover: #2563eb;
+  --text-main: #1f2937;
+  --text-secondary: #6b7280;
+  --text-light: #9ca3af;
+
+  --dropdown-bg: #ffffff;
+  --dropdown-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --dropdown-border-radius: 12px;
+
+  display: block;
+  width: 100%;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.app-header {
+  height: var(--header-height);
+  background-color: var(--header-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--header-border-color);
+  box-shadow: var(--header-shadow);
+  display: flex;
+  align-items: center;
+  padding: 0 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+}
+
+.brand-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--text-main);
+  gap: 0.75rem;
+  transition: opacity 0.2s;
+}
+
+.brand-link:hover {
+  opacity: 0.8;
+}
+
+.brand-image {
+  height: 36px;
+  width: auto;
+  border-radius: 6px;
+}
+
+.brand-text {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  color: var(--text-main);
+}
+
+/* --- Actions --- */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* --- Search --- */
+.search-item {
+  position: relative;
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .search-item {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.search-link {
+  display: flex;
+  align-items: center;
+  background-color: #f3f4f6;
+  border: 1px solid transparent;
+  border-radius: 9999px; /* Pill shape */
+  padding: 0.5rem 1rem;
+  transition: all 0.2s ease;
+  width: 200px;
+  text-decoration: none;
+}
+
+.search-link:focus-within {
+  background-color: #fff;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  width: 260px; /* Expand on focus */
+}
+
+.search-link i {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  margin-right: 0.5rem;
+}
+
+.search-input {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  font-size: 0.95rem;
+  color: var(--text-main);
+}
+
+.search-input::placeholder {
+  color: var(--text-light);
+}
+
+/* --- User Menu --- */
+.user-menu-item {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.user-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.user-link:hover {
+  background-color: #f3f4f6;
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.user-name {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-main);
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .user-name {
+    display: block;
+  }
+}
+
+/* --- Dropdown --- */
+.user-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 300px;
+  background-color: var(--dropdown-bg);
+  border-radius: var(--dropdown-border-radius);
+  box-shadow: var(--dropdown-shadow);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+
+  /* Animation */
+  opacity: 0;
+  transform: translateY(-10px) scale(0.98);
+  visibility: hidden;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: top right;
+}
+
+/* Show Dropdown */
+.user-menu-item:hover .user-dropdown-menu,
+.user-menu-item:focus-within .user-dropdown-menu {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  visibility: visible;
+}
+
+/* Dropdown Content */
+.dropdown-header {
+  background: linear-gradient(135deg, var(--primary-color), #2563eb);
+  color: white;
+  padding: 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.dropdown-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  margin-bottom: 0.75rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  object-fit: cover;
+}
+
+.dropdown-header p {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.dropdown-header small {
+  display: block;
+  margin-top: 0.25rem;
+  opacity: 0.9;
+  font-size: 0.85rem;
+  font-weight: 400;
+}
+
+.dropdown-body {
+  display: flex;
+  padding: 1rem 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.stat-item {
+  flex: 1;
+  text-align: center;
+  position: relative;
+}
+
+.stat-item:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 20%;
+  height: 60%;
+  width: 1px;
+  background-color: #f3f4f6;
+}
+
+.stat-item a {
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.stat-item a:hover {
+  color: var(--primary-color);
+}
+
+.dropdown-footer {
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  background-color: #f9fafb;
+}
+
+.btn-profile,
+.btn-signout {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.btn-profile {
+  background-color: var(--primary-color);
+  color: white;
+  border: 1px solid transparent;
+}
+
+.btn-profile:hover {
+  background-color: var(--primary-hover);
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+}
+
+.btn-signout {
+  background-color: white;
+  color: var(--text-secondary);
+  border: 1px solid #e5e7eb;
+}
+
+.btn-signout:hover {
+  background-color: #f3f4f6;
+  color: var(--text-main);
+  border-color: #d1d5db;
+}
