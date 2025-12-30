@@ -24,6 +24,18 @@ try
         .AddApplication()
         .AddInfrastructure(builder.Configuration);
 
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("FrontendCors", policy =>
+        {
+            policy
+                .WithOrigins("http://localhost:4200")
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        });
+    });
+
     var app = builder.Build();
 
     app.UseSerilogRequestLogging();
@@ -41,6 +53,9 @@ try
     }
 
     app.UseHttpsRedirection();
+
+    app.UseCors("FrontendCors");
+
     app.UseRateLimiter();
     app.UseAuthentication();
     app.UseAuthorization();

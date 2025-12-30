@@ -7,7 +7,6 @@ using System.Security.Claims;
 
 namespace LearningSystem.Api.Controllers;
 
-[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class CoursesController : ControllerBase
@@ -37,6 +36,7 @@ public class CoursesController : ControllerBase
         return Ok(dto);
     }
 
+    [Authorize]
     [HttpPost]
     public async Task<ActionResult<CourseDto>> AddCourse([FromBody] CreateCourseDto dto)
     {
@@ -45,6 +45,7 @@ public class CoursesController : ControllerBase
         return CreatedAtAction(nameof(GetCourseById), new { id = createdCourse.Id }, createdCourse);
     }
 
+    [Authorize]
     [HttpPut("{id:int}")]
     public async Task<ActionResult<CourseDto>> UpdateCourse(int id, [FromBody] UpdateCourseDto dto)
     {
@@ -53,6 +54,7 @@ public class CoursesController : ControllerBase
         return Ok(updatedCourse);
     }
 
+    [Authorize]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteCourse(int id)
     {
@@ -60,6 +62,7 @@ public class CoursesController : ControllerBase
         return NoContent();
     }
 
+    [Authorize]
     [HttpPost("{courseId:int}/enroll")]
     public async Task<IActionResult> Enroll(int courseId)
     {
