@@ -24,9 +24,23 @@ public static class DependencyInjection
       this IServiceCollection services,
       ConfigurationManager configuration)
     {
-        services.AddSingleton<IConnectionMultiplexer>(sp =>
-            ConnectionMultiplexer.Connect(configuration.GetConnectionString("Redis")!));
-        services.AddScoped<ICacheService, CacheService>();
+        bool cacheEnabled = configuration.GetValue<bool>("Cache:Enabled");
+        string redisConnection = configuration["Cache:RedisConnection"] ?? "";
+
+        if (cacheEnabled)
+        {
+            try
+            {
+                var multiplexer = ConnectionMultiplexer.Connect(redisConnection);
+                services.AddSingleton<IConnectionMultiplexer>(multiplexer);
+                services.AddScoped<ICacheService, CacheService>();
+            }
+            catch
+            {
+                services.AddScoped<ICacheService, NoOpCacheService>();
+            }
+        }
+        else services.AddScoped<ICacheService, NoOpCacheService>();
 
         services.AddDbContext<LearningSystemDbContext>(options =>
            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
@@ -48,7 +62,7 @@ public static class DependencyInjection
         services.AddScoped<IPasswordHasher, PasswordHasher>();
         services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
 
-        services.AddIdentity<User, LearningSystem.Domain.Entities.Role>(options =>
+        services.AddIdentity<User, Domain.Entities.Role>(options =>
         {
             options.Password.RequiredLength = 8;
             options.Password.RequireDigit = true;
