@@ -37,7 +37,7 @@ try
     });
 
     var app = builder.Build();
-
+   
     app.UseSerilogRequestLogging();
 
     app.UseMiddleware<GlobalExceptionHandlerMiddleware>();

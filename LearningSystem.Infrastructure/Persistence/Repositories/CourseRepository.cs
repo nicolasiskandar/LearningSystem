@@ -25,10 +25,12 @@ public class CourseRepository : ICourseRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<ICollection<Course>> GetAllCoursesAsync()
+    public async Task<ICollection<Course>> GetAllCoursesAsync(int page, int pageSize)
     {
         return await _context.Courses
                          .Include(c => c.Category)
+                         .Skip((page - 1) * pageSize)
+                         .Take(pageSize)
                          .ToListAsync();
     }
 
