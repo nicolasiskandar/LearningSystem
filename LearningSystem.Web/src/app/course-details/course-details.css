@@ -1,0 +1,279 @@
+/* Global adjustments */
+*,
+*::before,
+*::after {
+  box-sizing: border-box; /* prevents overflow from padding/margin */
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: #f9f9f9;
+  color: #2a2a2a;
+  overflow-x: hidden; /* remove horizontal scroll */
+}
+
+/* Breadcrumb */
+.breadcrumb-bar {
+  background-color: #f9f9f9; /* matches page */
+  padding: 0.5rem 0;
+}
+
+.breadcrumb-bar .breadcrumb-link {
+  color: #6366f1;
+  font-weight: 500;
+  font-size: 0.875rem; /* smaller */
+}
+
+.breadcrumb-bar .breadcrumb-link:hover {
+  text-decoration: underline;
+}
+
+.breadcrumb-bar .breadcrumb-separator {
+  margin: 0 0.5rem;
+  color: #999;
+}
+
+.breadcrumb-bar .breadcrumb-category {
+  color: #555;
+  font-size: 0.875rem;
+}
+
+/* Hero Section */
+.course-hero {
+  padding: 2rem 0;
+  margin-bottom: 2rem;
+  background-color: #f9f9f9; /* neutral background */
+}
+
+.hero-container {
+  display: flex;
+  align-items: flex-start; /* top align text with image */
+  justify-content: space-between;
+  gap: 2rem;
+  width: 100%;
+  max-width: 1200px; /* prevent overflowing wide screens */
+  margin: 0 auto; /* center the hero container */
+  padding: 0 1rem; /* responsive padding */
+}
+
+.hero-left {
+  flex: 0 0 70%;
+}
+
+.hero-title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.hero-subtitle {
+  font-size: 1.125rem;
+  margin-bottom: 1rem;
+}
+
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.875rem;
+  color: #555;
+}
+
+/* Difficulty badges */
+.badge-difficulty {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.badge-difficulty.easy {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+.badge-difficulty.medium {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+.badge-difficulty.hard {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+/* Hero Right - Preview Image */
+.hero-right {
+  flex: 0 0 30%; /* same as sidebar width */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  margin-right: 2rem; /* space from left text */
+}
+
+.preview-frame {
+  width: 100%; /* fill hero-right */
+  max-width: 320px; /* similar width to sidebar */
+  aspect-ratio: 3/2;
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #e5e7eb; /* light gray frame background */
+}
+
+.preview-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* maintain ratio, fill frame */
+  border-radius: 8px;
+}
+
+.play-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.5);
+  padding: 0.5rem;
+  border-radius: 50%;
+  color: white;
+  font-size: 1.5rem;
+  transition: background 0.3s;
+}
+
+.play-overlay:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+/* Main Content Layout */
+.course-main {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 3rem;
+  width: 100%;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 1rem;
+  overflow: hidden; /* prevent horizontal overflow */
+}
+
+.content-left {
+  flex: 1 1 65%;
+  min-width: 0; /* prevents flex overflow on small screens */
+}
+
+.content-right {
+  flex: 1 1 30%;
+  min-width: 0;
+}
+
+/* Cards */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.section-card h3 {
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+}
+
+/* Lessons */
+.lesson-list .lesson-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  transition: background 0.2s;
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+}
+
+.lesson-list .lesson-item:hover {
+  background: #f3f4f6;
+}
+
+.lesson-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 500;
+}
+
+.lesson-duration {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* Sidebar */
+.sticky-sidebar {
+  position: sticky;
+  top: 2rem;
+}
+
+.price-tag {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.btn-primary {
+  background-color: #6366f1;
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: #4f46e5;
+}
+
+.course-includes ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.course-includes li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+/* Loading / Error */
+.loading-container,
+.error-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 6px solid #ececec;
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.alert-error {
+  color: #b91c1c;
+  background-color: #fca5a5;
+  padding: 1rem;
+  border-radius: 8px;
+}

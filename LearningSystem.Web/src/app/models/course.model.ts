@@ -10,3 +10,13 @@ export interface Course {
   createdAt: string;
   isPublished: boolean;
 }
+
+export interface Lesson {
+  id: number;
+  courseId: number;
+  title: string;
+  content: string;
+  videoUrl: string;
+  order: number;
+  estimatedDuration: number;
+}

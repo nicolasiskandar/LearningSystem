@@ -1,0 +1,98 @@
+@if (isLoading()) {
+<div class="loading-container">
+  <div class="spinner"></div>
+</div>
+} @else if (error()) {
+<div class="error-container">
+  <div class="alert alert-error">{{ error() }}</div>
+</div>
+} @else if (course()) {
+
+<!-- Breadcrumb -->
+<div class="breadcrumb-bar">
+  <div class="container">
+    <a routerLink="/courses" class="breadcrumb-link small">
+      <i class="bi bi-chevron-left"></i> Back to Courses
+    </a>
+    <span class="breadcrumb-separator">|</span>
+    <span class="breadcrumb-category">{{ course()?.category }}</span>
+  </div>
+</div>
+
+<!-- Hero Section -->
+<div class="course-hero">
+  <div class="container hero-container">
+    <div class="hero-left">
+      <h1 class="hero-title">{{ course()?.title }}</h1>
+      <p class="hero-subtitle">{{ course()?.shortDescription }}</p>
+      <div class="hero-meta">
+        <span class="badge-difficulty" [class]="course()?.difficulty?.toLowerCase()">
+          {{ course()?.difficulty }}
+        </span>
+        <span class="meta-item"><i class="bi bi-tag"></i> {{ course()?.category }}</span>
+        <span class="meta-item"
+          ><i class="bi bi-person"></i>
+          {{ instructorName() || 'Instructor #' + course()?.createdBy }}</span
+        >
+        <span class="meta-item"
+          ><i class="bi bi-calendar"></i> Updated {{ course()?.createdAt | date }}</span
+        >
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="preview-frame">
+        <img [src]="course()?.thumbnail || 'assets/img/photo1.png'" alt="Course Preview" />
+        <div class="play-overlay"><i class="bi bi-play-fill"></i></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div class="container course-main">
+  <div class="content-left">
+    <!-- Long Description stays here -->
+    <div class="card section-card">
+      <h3>Description</h3>
+      <p>{{ course()?.longDescription }}</p>
+    </div>
+
+    <!-- Curriculum -->
+    <div class="card section-card">
+      <h3>Course Curriculum</h3>
+      <div class="curriculum-info">{{ lessons().length }} lessons</div>
+      <div class="lesson-list">
+        @for (lesson of lessons(); track lesson.id) {
+        <div class="lesson-item">
+          <div class="lesson-info">
+            <i class="bi bi-play-circle-fill"></i>
+            <span class="lesson-title">{{ lesson.title }}</span>
+          </div>
+          <span class="lesson-duration">{{ lesson.estimatedDuration }} min</span>
+        </div>
+        } @empty {
+        <div class="text-muted">No lessons available.</div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="content-right">
+    <div class="sidebar card sticky-sidebar">
+      <h2 class="price-tag">Free</h2>
+      <button class="btn btn-primary w-100 btn-lg mb-3">Enroll Now</button>
+      <p class="text-center small text-muted">30-Day Money-Back Guarantee</p>
+      <div class="course-includes">
+        <h6>This course includes:</h6>
+        <ul>
+          <li><i class="bi bi-film"></i> {{ lessons().length }} lessons</li>
+          <li><i class="bi bi-phone"></i> Access on mobile and TV</li>
+          <li><i class="bi bi-infinity"></i> Full lifetime access</li>
+          <li><i class="bi bi-trophy"></i> Certificate of completion</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+}

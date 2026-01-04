@@ -1,18 +1,22 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { CourseService } from '../services/course.service';
+import { UserService } from '../services/user.service';
 import { Course } from '../models/course.model';
 
 @Component({
   selector: 'app-courses',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './courses.html',
   styleUrl: './courses.css',
 })
 export class Courses implements OnInit {
   private courseService = inject(CourseService);
+  private userService = inject(UserService);
 
   courses = signal<Course[]>([]);
+  instructorNames = signal<Record<number, string>>({});
   isLoading = signal(true);
   isMoreLoading = signal(false);
   error = signal<string | null>(null);
@@ -29,6 +33,7 @@ export class Courses implements OnInit {
     this.courseService.getCourses(this.currentPage(), this.pageSize).subscribe({
       next: (data) => {
         this.courses.set(data);
+        this.loadInstructors(data);
         this.isLoading.set(false);
         this.hasMore.set(data.length === this.pageSize);
       },
@@ -45,11 +50,12 @@ export class Courses implements OnInit {
 
     this.isMoreLoading.set(true);
     const nextPage = this.currentPage() + 1;
-    
+
     this.courseService.getCourses(nextPage, this.pageSize).subscribe({
       next: (data) => {
         if (data.length > 0) {
-          this.courses.update(prev => [...prev, ...data]);
+          this.courses.update((prev) => [...prev, ...data]);
+          this.loadInstructors(data);
           this.currentPage.set(nextPage);
         }
         this.hasMore.set(data.length === this.pageSize);
@@ -59,6 +65,25 @@ export class Courses implements OnInit {
         console.error('Error loading more courses:', err);
         this.isMoreLoading.set(false);
       },
+    });
+  }
+
+  private loadInstructors(courses: Course[]): void {
+    const uniqueIds = [...new Set(courses.map((c) => c.createdBy))];
+    const currentNames = this.instructorNames();
+
+    uniqueIds.forEach((id) => {
+      if (!currentNames[id]) {
+        this.userService.getUser(id).subscribe({
+          next: (user) => {
+            this.instructorNames.update((prev) => ({
+              ...prev,
+              [id]: user.fullName,
+            }));
+          },
+          error: (err) => console.error(`Error loading instructor ${id}`, err),
+        });
+      }
     });
   }
 }
