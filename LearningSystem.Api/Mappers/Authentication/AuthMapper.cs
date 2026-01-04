@@ -33,4 +33,12 @@ public class AuthMapper : IAuthMapper
             request.Password
         );
     }
+
+    public ChangePasswordCommand Map(ChangePasswordRequest request)
+    {
+        return new ChangePasswordCommand(
+            request.OldPassword,
+            request.NewPassword
+        );
+    }
 }

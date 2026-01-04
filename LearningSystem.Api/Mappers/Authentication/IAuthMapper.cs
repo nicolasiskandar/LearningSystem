@@ -10,4 +10,5 @@ public interface IAuthMapper
     AuthenticationResponse Map(AuthenticationResult result);
     RegisterUserCommand Map(RegisterRequest command);
     LoginQuery Map(LoginRequest query);
+    ChangePasswordCommand Map(ChangePasswordRequest command);
 }

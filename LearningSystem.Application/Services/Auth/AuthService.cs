@@ -1,11 +1,13 @@
 ﻿using LearningSystem.Application.Authentication.Commands;
 using LearningSystem.Application.Authentication.Common;
 using LearningSystem.Application.Authentication.Queries;
+using LearningSystem.Application.Common.Exceptions;
 using LearningSystem.Application.Common.Exceptions.Users;
 using LearningSystem.Application.Common.Security;
 using LearningSystem.Application.Mappers.Users;
 using LearningSystem.Domain.Entities;
 using LearningSystem.Domain.Enums;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
@@ -16,17 +18,21 @@ public class AuthService : IAuthService
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signInManager;
     private readonly IUserMapper _userMapper;
+    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IJwtTokenGenerator _jwtGenerator;
+
 
     public AuthService(
         UserManager<User> userManager,
         SignInManager<User> signInManager,
         IUserMapper userMapper,
+        IHttpContextAccessor httpContextAccessor,
         IJwtTokenGenerator jwtGenerator)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _userMapper = userMapper;
+        _httpContextAccessor = httpContextAccessor;
         _jwtGenerator = jwtGenerator;
     }
 
@@ -83,5 +89,26 @@ public class AuthService : IAuthService
         var newRefreshToken = _jwtGenerator.CreateRefreshToken(user);
 
         return new AuthenticationResult(user, newAccessToken, newRefreshToken);
+    }
+
+    public async Task ChangePasswordAsync(ChangePasswordCommand command)
+    {
+        var userIdClaim = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier);
+        if (userIdClaim == null)
+            throw new UserNotFoundException();
+
+        if (!int.TryParse(userIdClaim.Value, out int userId))
+            throw new UserNotFoundException();
+
+        if (userId == null)
+            throw new UnauthorizedAccessException("User not authenticated");
+
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user == null)
+            throw new UserNotFoundException("User not found");
+
+        var result = await _userManager.ChangePasswordAsync(user, command.OldPassword, command.NewPassword);
+        if (!result.Succeeded)
+            throw new UnauthorizedAccessException("Invalid old password.");
     }
 }
