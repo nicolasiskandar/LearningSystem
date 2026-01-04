@@ -10,7 +10,7 @@ export class CourseService {
   private http = inject(HttpClient);
   private apiUrl = 'http://localhost:5142/api/Courses';
 
-  getCourses(): Observable<Course[]> {
-    return this.http.get<Course[]>(this.apiUrl);
+  getCourses(page: number = 1, pageSize: number = 40): Observable<Course[]> {
+    return this.http.get<Course[]>(`${this.apiUrl}?page=${page}&pageSize=${pageSize}`);
   }
 }

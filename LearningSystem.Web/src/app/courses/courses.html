@@ -57,9 +57,17 @@
     </div>
 
     <!-- Load More Placeholder -->
+    @if (hasMore()) {
     <div class="load-more-container">
-      <button class="btn-load-more" (click)="loadCourses()">Load More</button>
+      <button class="btn-load-more" (click)="loadMore()" [disabled]="isMoreLoading()">
+        @if (isMoreLoading()) {
+          <span class="spinner-sm"></span> Loading...
+        } @else {
+          Load More
+        }
+      </button>
     </div>
+    }
     }
   </div>
 </div>
