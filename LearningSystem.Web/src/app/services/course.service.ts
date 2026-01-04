@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Course, Lesson } from '../models/course.model';
 
@@ -20,5 +20,13 @@ export class CourseService {
 
   getLessons(courseId: number): Observable<Lesson[]> {
     return this.http.get<Lesson[]>(`${this.apiUrl}/lessons/course/${courseId}`);
+  }
+
+  enrollCourse(courseId: number): Observable<any> {
+    const token = localStorage.getItem('token');
+    let headers = new HttpHeaders();
+    if (token) headers = headers.set('Authorization', `Bearer ${token}`);
+
+    return this.http.post(`${this.apiUrl}/Courses/${courseId}/enroll`, {}, { headers });
   }
 }

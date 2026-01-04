@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CourseService } from '../services/course.service';
 import { UserService } from '../services/user.service';
 import { Course, Lesson } from '../models/course.model';
@@ -13,6 +13,7 @@ import { Course, Lesson } from '../models/course.model';
 })
 export class CourseDetails implements OnInit {
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private courseService = inject(CourseService);
   private userService = inject(UserService);
 
@@ -21,6 +22,7 @@ export class CourseDetails implements OnInit {
   lessons = signal<Lesson[]>([]);
   isLoading = signal(true);
   error = signal<string | null>(null);
+  isEnrolling = signal(false);
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -60,6 +62,34 @@ export class CourseDetails implements OnInit {
       },
       error: (err) => {
         console.error('Error fetching lessons:', err);
+      },
+    });
+  }
+
+  enroll(): void {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
+    const currentCourse = this.course();
+    if (!currentCourse) return;
+
+    this.isEnrolling.set(true);
+    this.courseService.enrollCourse(currentCourse.id).subscribe({
+      next: () => {
+        alert('Successfully enrolled!');
+        this.isEnrolling.set(false);
+      },
+      error: (err) => {
+        console.error('Enrollment failed', err);
+        this.isEnrolling.set(false);
+        if (err.status === 401) {
+          this.router.navigate(['/login']);
+        } else {
+          alert('Enrollment failed. Please try again.');
+        }
       },
     });
   }
