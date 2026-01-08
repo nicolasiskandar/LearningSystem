@@ -109,8 +109,6 @@ public class CourseService : ICourseService
         if (!isAdmin && command.CreatedBy.ToString() != userId)
             throw new ForbiddenExcception("You are not authorized to create this course");
 
-        await TransformStudentToInstructor(creator);
-
         var category = await _categoryRepository.GetCategoryByIdAsync(command.CategoryId);
         if (category == null)
             throw new CategoryNotFoundException(command.CategoryId);
@@ -171,22 +169,5 @@ public class CourseService : ICourseService
         
         await _cacheService.RemoveAsync($"course-{id}");
         await _cacheService.RemoveAsync("courses-all");
-    }
-
-    private async Task TransformStudentToInstructor(User creator)
-    {
-        var isInstructor = await _userManager.IsInRoleAsync(creator, Roles.Instructor.ToString());
-        if (isInstructor) return;
-
-        var notAStudent = !await _userManager.IsInRoleAsync(creator, Roles.Student.ToString());
-        if (notAStudent) return;
-
-        var removeResult = await _userManager.RemoveFromRoleAsync(creator, Roles.Student.ToString());
-        if (!removeResult.Succeeded)
-            throw new InvalidOperationException("Failed to remove Student role from the user.");
-
-        var addResult = await _userManager.AddToRoleAsync(creator, Roles.Instructor.ToString());
-        if (!addResult.Succeeded)
-            throw new InvalidOperationException("Failed to assign Instructor role to the user.");
     }
 }
