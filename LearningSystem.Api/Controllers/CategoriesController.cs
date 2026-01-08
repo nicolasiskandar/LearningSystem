@@ -21,6 +21,7 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpGet]
+    [AllowAnonymous]
     public async Task<ActionResult<ICollection<CategoryDto>>> GetAll()
     {
         var results = await _categoryService.GetAllCategoriesAsync();
@@ -29,6 +30,7 @@ public class CategoriesController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [AllowAnonymous]
     public async Task<ActionResult<CategoryDto>> GetById(int id)
     {
         var result = await _categoryService.GetCategoryByIdAsync(id);

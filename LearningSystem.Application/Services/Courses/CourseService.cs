@@ -82,14 +82,20 @@ public class CourseService : ICourseService
         return result;
     }
 
-    public async Task<IEnumerable<CourseResult>> GetCoursesAsync(int page, int pageSize)
+    public async Task<IEnumerable<CourseResult>> GetCoursesAsync(int page, int pageSize, int? categoryId = null)
     {
+        if (categoryId.HasValue)
+        {
+            var courses = await _courseRepository.GetCoursesByCategoryIdAsync(categoryId.Value, page, pageSize);
+            return _courseMapper.Map(courses);
+        }
+
         var cachedCourses = await _cacheService.GetAsync<IEnumerable<CourseResult>>("courses-all");
         if (cachedCourses != null)
             return cachedCourses.Skip((page - 1) * pageSize).Take(pageSize);
 
-        var courses = await _courseRepository.GetAllCoursesAsync(page, pageSize);
-        var result = _courseMapper.Map(courses);
+        var coursesAll = await _courseRepository.GetAllCoursesAsync(page, pageSize);
+        var result = _courseMapper.Map(coursesAll);
         
         return result;
     }

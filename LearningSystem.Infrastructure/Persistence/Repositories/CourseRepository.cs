@@ -34,6 +34,16 @@ public class CourseRepository : ICourseRepository
                          .ToListAsync();
     }
 
+    public async Task<ICollection<Course>> GetCoursesByCategoryIdAsync(int categoryId, int page, int pageSize)
+    {
+        return await _context.Courses
+                         .Include(c => c.Category)
+                         .Where(c => c.CategoryId == categoryId)
+                         .Skip((page - 1) * pageSize)
+                         .Take(pageSize)
+                         .ToListAsync();
+    }
+
     public async Task<Course?> GetCourseByIdAsync(int id)
     {
         return await _context.Courses
