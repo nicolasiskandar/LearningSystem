@@ -8,12 +8,20 @@
     </div>
 
     <div class="header-actions">
+      @if (userService.currentUser(); as user) {
       <div class="user-menu-item">
         <a routerLink="/profile" class="user-link">
           <img src="default-pfp.png" class="user-avatar" alt="User Image" />
-          <span class="user-name">Alexander Pierce</span>
+          <span class="user-name">{{ user.fullName }}</span>
         </a>
+        <button (click)="logout()" class="logout-btn">Logout</button>
       </div>
+      } @else {
+      <div class="auth-links">
+        <a routerLink="/login" class="nav-link">Login</a>
+        <a routerLink="/register" class="nav-link">Register</a>
+      </div>
+      }
     </div>
   </div>
 </nav>

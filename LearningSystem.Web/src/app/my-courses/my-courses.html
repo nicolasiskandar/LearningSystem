@@ -1,0 +1,61 @@
+<div class="app-content-header">
+  <div class="container-fluid">
+    <div class="row align-items-center">
+      <div class="col-sm-6">
+        <h3 class="page-title mb-0">My Courses</h3>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="app-content">
+  <div class="container-fluid">
+    @if (isLoading()) {
+    <div class="loading-container d-flex justify-content-center align-items-center">
+      <div class="spinner"></div>
+    </div>
+    } @if (error()) {
+    <div class="alert alert-error">
+      {{ error() }}
+    </div>
+    }
+
+    <!-- Courses Grid -->
+    @if (!isLoading() && !error()) {
+    <div class="course-grid">
+      @for (course of courses(); track course.id) {
+      <div class="course-card">
+        <div class="course-thumbnail" [routerLink]="['/courses', course.id]" style="cursor: pointer;">
+          <img [src]="course.thumbnail || 'assets/img/photo1.png'" [alt]="course.title" />
+          <span class="badge-category">{{ course.category }}</span>
+        </div>
+
+        <div class="course-content">
+          <div class="course-meta">
+            <span class="difficulty" [class]="course.difficulty.toLowerCase()">
+              {{ course.difficulty }}
+            </span>
+          </div>
+
+          <h5 class="course-title" [title]="course.title" [routerLink]="['/courses', course.id]" style="cursor: pointer;">{{ course.title }}</h5>
+          <p class="course-description">{{ course.shortDescription }}</p>
+
+          <div class="course-footer">
+            <div class="course-instructor">
+              <i class="bi bi-person"></i>
+              <span>{{ instructorNames()[course.createdBy] || 'Instructor #' + course.createdBy }}</span>
+            </div>
+            <button class="btn-view" [routerLink]="['/courses', course.id]">Go to Course</button>
+          </div>
+        </div>
+      </div>
+      } @empty {
+      <div class="empty-state">
+        <p>You haven't enrolled in any courses yet.</p>
+        <button class="btn btn-primary mt-3" routerLink="/courses">Browse Courses</button>
+      </div>
+      }
+    </div>
+    }
+  </div>
+</div>
