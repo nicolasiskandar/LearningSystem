@@ -42,7 +42,6 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    [Authorize(Roles = "SuperAdmin")]
     public async Task<ActionResult<UserDto>> GetUserById(int id)
     {
         var user = await _userService.GetUserByIdAsync(id);
