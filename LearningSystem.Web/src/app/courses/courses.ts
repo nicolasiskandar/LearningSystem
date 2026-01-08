@@ -4,10 +4,12 @@ import { RouterModule } from '@angular/router';
 import { CourseService } from '../services/course.service';
 import { UserService } from '../services/user.service';
 import { Course } from '../models/course.model';
+import { Category } from '../models/category.model';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-courses',
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './courses.html',
   styleUrl: './courses.css',
 })
@@ -16,6 +18,8 @@ export class Courses implements OnInit {
   private userService = inject(UserService);
 
   courses = signal<Course[]>([]);
+  categories = signal<Category[]>([]);
+  selectedCategoryId = signal<number | undefined>(undefined);
   instructorNames = signal<Record<number, string>>({});
   isLoading = signal(true);
   isMoreLoading = signal(false);
@@ -25,12 +29,26 @@ export class Courses implements OnInit {
   hasMore = signal(true);
 
   ngOnInit(): void {
+    this.loadCategories();
+    this.loadCourses();
+  }
+
+  loadCategories(): void {
+    this.courseService.getCategories().subscribe({
+      next: (data) => this.categories.set(data),
+      error: (err) => console.error('Error loading categories:', err),
+    });
+  }
+
+  onCategoryChange(): void {
+    this.currentPage.set(1);
+    this.courses.set([]);
     this.loadCourses();
   }
 
   loadCourses(): void {
     this.isLoading.set(true);
-    this.courseService.getCourses(this.currentPage(), this.pageSize).subscribe({
+    this.courseService.getCourses(this.currentPage(), this.pageSize, this.selectedCategoryId()).subscribe({
       next: (data) => {
         this.courses.set(data);
         this.loadInstructors(data);
@@ -51,7 +69,7 @@ export class Courses implements OnInit {
     this.isMoreLoading.set(true);
     const nextPage = this.currentPage() + 1;
 
-    this.courseService.getCourses(nextPage, this.pageSize).subscribe({
+    this.courseService.getCourses(nextPage, this.pageSize, this.selectedCategoryId()).subscribe({
       next: (data) => {
         if (data.length > 0) {
           this.courses.update((prev) => [...prev, ...data]);

@@ -1,8 +1,16 @@
 <div class="app-content-header">
   <div class="container-fluid">
-    <div class="row">
+    <div class="row align-items-center">
       <div class="col-sm-6">
-        <h3 class="mb-0">Online Courses</h3>
+        <h3 class="page-title mb-0">Online Courses</h3>
+      </div>
+      <div class="col-sm-6 text-end">
+        <select class="form-select category-select w-auto d-inline-block" [ngModel]="selectedCategoryId()" (ngModelChange)="selectedCategoryId.set($event === 'null' ? undefined : $event); onCategoryChange()">
+          <option [ngValue]="undefined">All Categories</option>
+          @for (category of categories(); track category.id) {
+            <option [ngValue]="category.id">{{ category.name }}</option>
+          }
+        </select>
       </div>
     </div>
   </div>
@@ -11,7 +19,7 @@
 <div class="app-content">
   <div class="container-fluid">
     @if (isLoading()) {
-    <div class="d-flex justify-content-center my-5">
+    <div class="loading-container d-flex justify-content-center align-items-center">
       <div class="spinner"></div>
     </div>
     } @if (error()) {
