@@ -67,7 +67,7 @@ export class CourseDetails implements OnInit {
   }
 
   enroll(): void {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('user');
     if (!token) {
       this.router.navigate(['/login']);
       return;

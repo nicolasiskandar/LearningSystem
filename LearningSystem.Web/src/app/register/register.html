@@ -1,0 +1,54 @@
+<div class="register-container">
+  <div class="register-card">
+    <h2>Register</h2>
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <div class="form-row">
+        <div class="form-group">
+          <label for="firstName">First Name</label>
+          <input type="text" id="firstName" formControlName="firstName" placeholder="First Name" />
+          @if(registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched){
+          <div class="error-text">First name is required</div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="lastName">Last Name</label>
+          <input type="text" id="lastName" formControlName="lastName" placeholder="Last Name" />
+          @if( registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched) {
+          <div class="error-text">Last name is required</div>
+          }
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" formControlName="email" placeholder="Enter your email" />
+        @if ( registerForm.get('email')?.invalid && registerForm.get('email')?.touched ) {
+        <div class="error-text">Valid email is required</div>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          formControlName="password"
+          placeholder="Create a password"
+        />
+        @if(registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
+        <div class="error-text">Password must be at least 8 characters</div>
+        }
+      </div>
+
+      @if(errorMessage) {
+      <div class="error-message">
+        {{ errorMessage }}
+      </div>
+      }
+
+      <button type="submit" [disabled]="registerForm.invalid">Register</button>
+    </form>
+    <p class="login-link">Already have an account? <a routerLink="/login">Login here</a></p>
+  </div>
+</div>

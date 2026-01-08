@@ -3,12 +3,14 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Course, Lesson } from '../models/course.model';
 import { Category } from '../models/category.model';
+import { UserService } from './user.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CourseService {
   private http = inject(HttpClient);
+  private userService = inject(UserService);
   private apiUrl = 'http://localhost:5142/api';
 
   getCourses(page: number = 1, pageSize: number = 40, categoryId?: number): Observable<Course[]> {
@@ -32,10 +34,20 @@ export class CourseService {
   }
 
   enrollCourse(courseId: number): Observable<any> {
-    const token = localStorage.getItem('token');
+    const user = this.userService.currentUser();
+    const token = user?.token;
     let headers = new HttpHeaders();
     if (token) headers = headers.set('Authorization', `Bearer ${token}`);
 
     return this.http.post(`${this.apiUrl}/Courses/${courseId}/enroll`, {}, { headers });
+  }
+
+  getEnrolledCourses(userId: number): Observable<Course[]> {
+    const user = this.userService.currentUser();
+    const token = user?.token;
+    let headers = new HttpHeaders();
+    if (token) headers = headers.set('Authorization', `Bearer ${token}`);
+
+    return this.http.get<Course[]>(`${this.apiUrl}/Users/${userId}/courses/enrolled`, { headers });
   }
 }
