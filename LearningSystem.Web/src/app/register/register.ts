@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -22,7 +22,7 @@ export class RegisterComponent {
     password: ['', [Validators.required, Validators.minLength(4)]],
   });
 
-  errorMessage = '';
+  errorMessage = signal('');
 
   onSubmit() {
     if (this.registerForm.valid) {
@@ -32,8 +32,9 @@ export class RegisterComponent {
         },
         error: (err) => {
           console.error('Registration failed', err);
-          this.errorMessage =
-            err.error?.message || err.error || 'Registration failed. Please try again.';
+          this.errorMessage.set(
+            err.error?.message || err.error || 'Registration failed. Please try again.'
+          );
         },
       });
     }

@@ -11,8 +11,4 @@ import { CommonModule } from '@angular/common';
 })
 export class Header {
   userService = inject(UserService);
-
-  logout() {
-    this.userService.logout();
-  }
 }

@@ -18,6 +18,10 @@
           <span class="joined-date">Joined {{ user()?.createdAt | date:'mediumDate' }}</span>
         </div>
       </div>
+      <div class="profile-actions">
+           <a routerLink="/change-password" class="btn-action">Change Password</a>
+           <button (click)="logout()" class="btn-action btn-logout">Logout</button>
+      </div>
     </div>
 
     <div class="profile-tabs">
