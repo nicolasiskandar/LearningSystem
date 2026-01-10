@@ -41,13 +41,4 @@ export class CourseService {
 
     return this.http.post(`${this.apiUrl}/Courses/${courseId}/enroll`, {}, { headers });
   }
-
-  getEnrolledCourses(userId: number): Observable<Course[]> {
-    const user = this.userService.currentUser();
-    const token = user?.token;
-    let headers = new HttpHeaders();
-    if (token) headers = headers.set('Authorization', `Bearer ${token}`);
-
-    return this.http.get<Course[]>(`${this.apiUrl}/Users/${userId}/courses/enrolled`, { headers });
-  }
 }

@@ -33,7 +33,7 @@ export class MyCourses implements OnInit {
 
   loadEnrolledCourses(userId: number): void {
     this.isLoading.set(true);
-    this.courseService.getEnrolledCourses(userId).subscribe({
+    this.userService.getEnrolledCourses(userId).subscribe({
       next: (data) => {
         this.courses.set(data);
         this.loadInstructors(data);

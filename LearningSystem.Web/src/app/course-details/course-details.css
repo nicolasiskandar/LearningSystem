@@ -250,6 +250,12 @@ body {
   box-shadow: none;
 }
 
+.btn-enroll.enrolled {
+  background-color: #f3f4f6;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+}
+
 .course-includes ul {
   list-style: none;
   padding: 0;

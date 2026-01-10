@@ -23,6 +23,7 @@ export class CourseDetails implements OnInit {
   isLoading = signal(true);
   error = signal<string | null>(null);
   isEnrolling = signal(false);
+  isEnrolled = signal(false);
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -41,6 +42,7 @@ export class CourseDetails implements OnInit {
       next: (course) => {
         this.course.set(course);
         this.checkLoading();
+        this.checkEnrollmentStatus(id);
 
         // Fetch instructor details
         this.userService.getUser(course.createdBy).subscribe({
@@ -64,6 +66,18 @@ export class CourseDetails implements OnInit {
         console.error('Error fetching lessons:', err);
       },
     });
+  }
+
+  checkEnrollmentStatus(courseId: number): void {
+    const user = this.userService.currentUser();
+    if (user) {
+      this.userService.getEnrolledCourses(user.id).subscribe({
+        next: (courses) => {
+          this.isEnrolled.set(courses.some((c) => c.id === courseId));
+        },
+        error: (err) => console.error('Error checking enrollment status:', err),
+      });
+    }
   }
 
   enroll(): void {

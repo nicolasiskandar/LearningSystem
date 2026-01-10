@@ -81,8 +81,18 @@
   <div class="content-right">
     <div class="sidebar card sticky-sidebar">
       <h2 class="price-tag">Free</h2>
-      <button class="btn btn-enroll" (click)="enroll()" [disabled]="isEnrolling()">
-        {{ isEnrolling() ? 'Enrolling...' : 'Enroll Now' }}
+      <button 
+        class="btn btn-enroll" 
+        (click)="enroll()" 
+        [disabled]="isEnrolling() || isEnrolled()"
+        [class.enrolled]="isEnrolled()">
+        @if (isEnrolling()) {
+          Enrolling...
+        } @else if (isEnrolled()) {
+          Already enrolled
+        } @else {
+          Enroll Now
+        }
       </button>
       <p class="text-center small text-muted">30-Day Money-Back Guarantee</p>
       <div class="course-includes">
