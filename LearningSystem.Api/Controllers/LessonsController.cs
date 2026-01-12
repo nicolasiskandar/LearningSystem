@@ -70,11 +70,19 @@ public class LessonsController : ControllerBase
         return NoContent();
     }
 
-    [Authorize]
+    [AllowAnonymous]
     [HttpPost("{lessonId}/complete")]
     public async Task<IActionResult> MarkLessonAsCompleted(int lessonId)
     {
         await _lessonService.MarkLessonAsCompletedAsync(lessonId, User);
         return Ok();
+    }
+
+    [AllowAnonymous]
+    [HttpGet("completed/{lessonId}/{userId}")]
+    public async Task<ActionResult<bool>> IsLessonCompleted(int lessonId, int userId)
+    {
+        var result = await _lessonService.IsLessonCompletedAsync(lessonId, userId);
+        return Ok(result);
     }
 }

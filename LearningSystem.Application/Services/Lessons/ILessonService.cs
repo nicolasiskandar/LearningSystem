@@ -13,4 +13,5 @@ public interface ILessonService
     Task<LessonResult> UpdateLessonAsync(UpdateLessonCommand command, ClaimsPrincipal user);
     Task DeleteLessonAsync(int id, ClaimsPrincipal user);
     Task MarkLessonAsCompletedAsync(int lessonId, ClaimsPrincipal user);
+    Task<bool> IsLessonCompletedAsync(int lessonId, int userId);
 }

@@ -203,4 +203,10 @@ public class LessonService : ILessonService
 
         await _lessonCompletedRepository.AddAsync(newLessonCompleted);
     }
+
+    public async Task<bool> IsLessonCompletedAsync(int lessonId, int userId)
+    {
+        var lessonCompleted = await _lessonCompletedRepository.GetByUserAndLessonAsync(userId, lessonId);
+        return lessonCompleted != null;
+    }
 }
