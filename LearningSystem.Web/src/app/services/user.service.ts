@@ -45,6 +45,11 @@ export class UserService {
       .pipe(tap((response) => this.handleAuthSuccess(response)));
   }
 
+  changePassword(request: { oldPassword: string; newPassword: string }): Observable<void> {
+    const headers = this.getHeadersForLogin();
+    return this.http.post<void>(`${this.apiUrl}/auth/change-password`, request, { headers });
+  }
+
   logout() {
     localStorage.removeItem('user');
     this.currentUser.set(null);

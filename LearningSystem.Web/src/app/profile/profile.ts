@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { UserService } from '../services/user.service';
 import { User } from '../models/user.model';
 import { Course } from '../models/course.model';
@@ -14,6 +14,7 @@ import { Course } from '../models/course.model';
 })
 export class Profile implements OnInit {
   private userService = inject(UserService);
+  private router = inject(Router);
 
   user = signal<User | null>(null);
   createdCourses = signal<Course[]>([]);
@@ -24,6 +25,11 @@ export class Profile implements OnInit {
 
   ngOnInit(): void {
     this.loadProfile();
+  }
+
+  logout(): void {
+    this.userService.logout();
+    this.router.navigate(['/login']);
   }
 
   loadProfile(): void {

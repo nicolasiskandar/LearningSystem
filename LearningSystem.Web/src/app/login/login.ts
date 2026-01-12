@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -20,7 +20,7 @@ export class LoginComponent {
     password: ['', [Validators.required]],
   });
 
-  errorMessage = '';
+  errorMessage = signal('');
 
   onSubmit() {
     if (this.loginForm.valid) {
@@ -30,7 +30,7 @@ export class LoginComponent {
         },
         error: (err) => {
           console.error('Login failed', err);
-          this.errorMessage = err.error?.message || err.error || 'Invalid email or password';
+          this.errorMessage.set(err.error?.message || err.error || 'Invalid email or password');
         },
       });
     }
