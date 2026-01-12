@@ -33,12 +33,21 @@ export class CourseService {
     return this.http.get<Lesson[]>(`${this.apiUrl}/lessons/course/${courseId}`);
   }
 
-  enrollCourse(courseId: number): Observable<any> {
-    const user = this.userService.currentUser();
-    const token = user?.token;
-    let headers = new HttpHeaders();
-    if (token) headers = headers.set('Authorization', `Bearer ${token}`);
+  getLesson(id: number): Observable<Lesson> {
+    return this.http.get<Lesson>(`${this.apiUrl}/lessons/${id}`);
+  }
 
+  completeLesson(lessonId: number): Observable<void> {
+    const headers = this.userService.getHeadersForLogin();
+    return this.http.post<void>(`${this.apiUrl}/lessons/${lessonId}/complete`, {}, { headers });
+  }
+
+  isLessonCompleted(lessonId: number, userId: number): Observable<boolean> {
+    return this.http.get<boolean>(`${this.apiUrl}/lessons/completed/${lessonId}/${userId}`);
+  }
+
+  enrollCourse(courseId: number): Observable<any> {
+    const headers = this.userService.getHeadersForLogin();
     return this.http.post(`${this.apiUrl}/Courses/${courseId}/enroll`, {}, { headers });
   }
 }

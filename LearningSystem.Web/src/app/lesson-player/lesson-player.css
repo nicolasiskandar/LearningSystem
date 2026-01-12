@@ -1,0 +1,272 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f7f9fa;
+  color: #2d2f31;
+}
+
+.player-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Header */
+.player-header {
+  height: 56px;
+  background-color: #1c1d1f; /* Dark header like Udemy */
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  flex-shrink: 0;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.back-link {
+  color: white;
+  text-decoration: none;
+  font-size: 1.2rem;
+  padding: 0.5rem;
+}
+.back-link:hover {
+  color: #cec0fc;
+}
+
+.course-title {
+  font-weight: 700;
+  font-size: 1rem;
+  max-width: 400px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Player Container */
+.player-container {
+  display: flex;
+  flex: 1;
+  overflow: hidden; /* Hide overflow to let children scroll */
+}
+
+/* Main Area */
+.player-main {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.video-wrapper {
+  background-color: black;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.video-wrapper iframe {
+  width: 100%;
+  height: 100%;
+}
+
+.no-video-placeholder {
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.no-video-placeholder i {
+  font-size: 3rem;
+}
+
+/* Lesson Meta */
+.lesson-meta {
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.lesson-header {
+  margin-bottom: 2rem;
+  border-bottom: 1px solid #d1d7dc;
+  padding-bottom: 1.5rem;
+}
+
+.lesson-header h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.lesson-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.lesson-content h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.lesson-content p {
+  line-height: 1.6;
+  color: #2d2f31;
+}
+
+/* Sidebar */
+.player-sidebar {
+  width: 350px;
+  background-color: white;
+  border-left: 1px solid #d1d7dc;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.sidebar-header {
+  padding: 1rem;
+  border-bottom: 1px solid #d1d7dc;
+  font-weight: 700;
+  background-color: #f7f9fa;
+}
+
+.lesson-list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.sidebar-lesson-item {
+  display: flex;
+  padding: 0.8rem 1rem;
+  cursor: pointer;
+  border-bottom: 1px solid #f7f9fa;
+  transition: background-color 0.2s;
+  align-items: flex-start;
+  gap: 0.8rem;
+}
+
+.sidebar-lesson-item:hover {
+  background-color: #f0f2f5;
+}
+
+.sidebar-lesson-item.active {
+  background-color: #d1d7dc; /* slightly darker for active */
+  border-left: 4px solid #3586f0; /* Udemy purple accent */
+}
+
+.checkbox-wrapper {
+  padding-top: 2px;
+  color: #6a6f73;
+}
+.sidebar-lesson-item.completed .checkbox-wrapper {
+  color: #2d2f31;
+}
+.sidebar-lesson-item.active .checkbox-wrapper {
+  color: #2d2f31;
+}
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.item-title {
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.item-duration {
+  font-size: 0.75rem;
+  color: #6a6f73;
+}
+
+/* Buttons */
+.btn {
+  padding: 0.6rem 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  border-radius: 0;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background-color: #2d2f31;
+  color: white;
+  border: 1px solid #2d2f31;
+}
+.btn-primary:hover {
+  background-color: #3e4143;
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 1px solid #2d2f31;
+  color: #2d2f31;
+}
+.btn-outline:hover {
+  background-color: #f7f9fa;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Loading */
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #a435f0;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .player-container {
+    flex-direction: column;
+  }
+  .player-sidebar {
+    width: 100%;
+    height: 300px; /* Fixed height for sidebar on mobile */
+    border-left: none;
+    border-top: 1px solid #d1d7dc;
+  }
+  .video-wrapper {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+}

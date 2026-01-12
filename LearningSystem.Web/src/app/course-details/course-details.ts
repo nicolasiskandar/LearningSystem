@@ -13,7 +13,7 @@ import { Course, Lesson } from '../models/course.model';
 })
 export class CourseDetails implements OnInit {
   private route = inject(ActivatedRoute);
-  private router = inject(Router);
+  protected router = inject(Router);
   private courseService = inject(CourseService);
   private userService = inject(UserService);
 
@@ -95,6 +95,7 @@ export class CourseDetails implements OnInit {
       next: () => {
         alert('Successfully enrolled!');
         this.isEnrolling.set(false);
+        this.isEnrolled.set(true);
       },
       error: (err) => {
         console.error('Enrollment failed', err);
@@ -106,6 +107,30 @@ export class CourseDetails implements OnInit {
         }
       },
     });
+  }
+
+  startCourse(): void {
+    const currentCourse = this.course();
+    const currentLessons = this.lessons();
+    if (currentCourse && currentLessons.length > 0) {
+      // In a real app, we might check for the last completed lesson
+      this.router.navigate([
+        '/courses',
+        currentCourse.id,
+        'learn',
+        'lecture',
+        currentLessons[0].id,
+      ]);
+    } else {
+      alert('This course has no lessons yet.');
+    }
+  }
+
+  navigateToLesson(lessonId: number): void {
+    const courseId = this.course()?.id;
+    if (courseId && this.isEnrolled()) {
+      this.router.navigate(['/courses', courseId, 'learn', 'lecture', lessonId]);
+    }
   }
 
   private checkLoading() {

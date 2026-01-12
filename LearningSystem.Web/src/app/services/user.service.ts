@@ -65,7 +65,7 @@ export class UserService {
     return userStr ? JSON.parse(userStr) : null;
   }
 
-  private getHeadersForLogin(): HttpHeaders {
+  public getHeadersForLogin(): HttpHeaders {
     const user = this.currentUser();
     const token = user?.token;
     let headers = new HttpHeaders();

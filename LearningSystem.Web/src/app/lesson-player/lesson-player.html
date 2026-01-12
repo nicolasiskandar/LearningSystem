@@ -1,0 +1,130 @@
+<div class="player-layout">
+  <!-- Header / Top Bar -->
+  <header class="player-header">
+    <div class="header-left">
+      <a [routerLink]="['/courses', courseId()]" class="back-link">
+        <i class="bi bi-chevron-left"></i>
+      </a>
+      <span class="course-title">{{ course()?.title }}</span>
+    </div>
+    <div class="header-right">
+      <!-- Progress could go here -->
+    </div>
+  </header>
+
+  <div class="player-container">
+    <!-- Main Content (Video + Text) on the LEFT -->
+    <main class="player-main">
+      @if (isLoading()) {
+      <div class="loading-spinner">
+        <div class="spinner"></div>
+      </div>
+      } @else if (currentLesson()) {
+      <div class="video-wrapper">
+        @if (currentLesson()?.videoUrl) { @if(safeVideoUrl()) {
+        <iframe
+          [src]="safeVideoUrl()"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+        >
+        </iframe>
+        } @else {
+        <div class="no-video">Video format not supported or URL invalid.</div>
+        } } @else {
+        <div class="no-video-placeholder">
+          <i class="bi bi-file-text"></i>
+          <p>No video content for this lesson.</p>
+        </div>
+        }
+      </div>
+
+      <div class="lesson-meta">
+        <div class="lesson-header">
+          <h2>{{ currentLesson()?.title }}</h2>
+
+          <div class="lesson-actions">
+            <button
+              class="btn btn-outline"
+              [disabled]="!prevLessonId()"
+              (click)="prevLessonId() && navigateToLesson(prevLessonId()!)"
+            >
+              <i class="bi bi-chevron-left"></i> Previous
+            </button>
+
+                                <button 
+
+                                    class="btn btn-primary" 
+
+                                    (click)="markComplete()" 
+
+                                    [disabled]="isCompleting() || currentLesson()?.isCompleted">
+
+                                    @if (currentLesson()?.isCompleted) {
+
+                                        Completed <i class="bi bi-check-lg"></i>
+
+                                    } @else {
+
+                                        Mark as Complete
+
+                                    }
+
+                                </button>
+
+            <button
+              class="btn btn-outline"
+              [disabled]="!nextLessonId()"
+              (click)="nextLessonId() && navigateToLesson(nextLessonId()!)"
+            >
+              Next <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="lesson-content">
+          <h3>About this lesson</h3>
+          <div class="content-body" [innerHTML]="currentLesson()?.content"></div>
+        </div>
+      </div>
+      } @else {
+      <div class="select-lesson-prompt">
+        <i class="bi bi-collection-play"></i>
+        <h3>Select a lesson to start learning</h3>
+      </div>
+      }
+    </main>
+
+    <!-- Sidebar (Curriculum) on the RIGHT -->
+    <aside class="player-sidebar">
+      <div class="sidebar-header">
+        <h4>Course Content</h4>
+      </div>
+      <div class="lesson-list">
+        @for (lesson of lessons(); track lesson.id; let i = $index) {
+        <div
+          class="sidebar-lesson-item"
+          [class.active]="lesson.id === lessonId()"
+          [class.completed]="lesson.isCompleted"
+          (click)="navigateToLesson(lesson.id)"
+        >
+          <div class="checkbox-wrapper">
+            @if (lesson.isCompleted) {
+            <i class="bi bi-check-square-fill"></i>
+            } @else {
+            <i class="bi bi-square"></i>
+            }
+          </div>
+
+          <div class="item-info">
+            <span class="item-title">{{ i + 1 }}. {{ lesson.title }}</span>
+            <span class="item-duration">
+              <i class="bi bi-play-circle"></i> {{ lesson.estimatedDuration }} min
+            </span>
+          </div>
+        </div>
+        }
+      </div>
+    </aside>
+  </div>
+</div>

@@ -198,6 +198,20 @@ body {
   background: #f3f4f6;
 }
 
+.lesson-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.lesson-item.clickable {
+  cursor: pointer;
+}
+.lesson-item.clickable:hover {
+  background-color: #f7f9fa;
+}
+
 .lesson-info {
   display: flex;
   align-items: center;
@@ -251,8 +265,8 @@ body {
 }
 
 .btn-enroll.enrolled {
-  background-color: #f3f4f6;
-  color: #6b7280;
+  background-color: #67e7df;
+  color: #ffffff;
   border: 1px solid #e5e7eb;
 }
 

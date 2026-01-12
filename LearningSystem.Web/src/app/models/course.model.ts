@@ -19,4 +19,5 @@ export interface Lesson {
   videoUrl: string;
   order: number;
   estimatedDuration: number;
+  isCompleted?: boolean;
 }
