@@ -110,14 +110,14 @@ export class LessonPlayer implements OnInit {
         const sorted = list.sort((a, b) => a.order - b.order);
         this.lessons.set(sorted);
         this.checkLessonsCompletion(sorted);
-        
+
         // If we have a lessonId but no currentLesson (e.g. deep link landing), select it now
         const currentLId = this.lessonId();
         if (currentLId && !this.currentLesson()) {
-            this.selectLesson(currentLId);
+          this.selectLesson(currentLId);
         }
       },
-      error: (e) => console.error('Error loading lessons', e)
+      error: (e) => console.error('Error loading lessons', e),
     });
   }
 
@@ -125,14 +125,14 @@ export class LessonPlayer implements OnInit {
     const user = this.userService.currentUser();
     if (!user) return;
 
-    lessons.forEach(lesson => {
+    lessons.forEach((lesson) => {
       this.courseService.isLessonCompleted(lesson.id, user.id).subscribe({
         next: (isCompleted) => {
           if (isCompleted) {
             this.updateLessonStatus(lesson.id, true);
           }
         },
-        error: (err) => console.error(`Error checking status for lesson ${lesson.id}`, err)
+        error: (err) => console.error(`Error checking status for lesson ${lesson.id}`, err),
       });
     });
   }
@@ -144,7 +144,6 @@ export class LessonPlayer implements OnInit {
         this.currentLesson.set(l);
         this.isLoading.set(false);
 
-        // Check specific completion status for this lesson
         const user = this.userService.currentUser();
         if (user) {
           this.courseService.isLessonCompleted(l.id, user.id).subscribe({

@@ -7,7 +7,6 @@ import { Course } from '../models/course.model';
 
 @Component({
   selector: 'app-profile',
-  standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './profile.html',
   styleUrl: './profile.css',

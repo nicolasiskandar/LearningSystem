@@ -1,0 +1,63 @@
+<div class="container">
+  <h2>My Certificates</h2>
+
+  <!-- Loading State -->
+  @if (loading()) {
+  <div class="loading-state">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+    <p>Loading certificates...</p>
+  </div>
+  } @else {
+  <!-- Certificates List -->
+  @if (certificates().length > 0) {
+  <div class="certificate-grid">
+    @for (cert of certificates(); track cert.id) {
+    <div class="certificate-card">
+      <div class="certificate-header">
+        <i class="bi bi-award-fill certificate-icon"></i>
+        <h3>Certificate of Completion</h3>
+      </div>
+
+      <div class="certificate-content">
+        @if (cert.course) {
+        <h4>{{ cert.course.title }}</h4>
+        <p class="course-category">{{ cert.course.category }}</p>
+        <p class="course-description">{{ cert.course.shortDescription }}</p>
+        } @else {
+        <h4>Course #{{ cert.courseId }}</h4>
+        <p class="text-muted">Loading course details...</p>
+        }
+
+        <div class="certificate-meta">
+          <span class="meta-item">
+            <i class="bi bi-calendar-check"></i>
+            Completed on {{ cert.id | date : 'mediumDate' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="certificate-actions">
+        <button (click)="downloadCertificate(cert.downloadUrl)" class="btn btn-primary">
+          <i class="bi bi-download"></i> Download Certificate
+        </button>
+        @if (cert.course) {
+        <button (click)="viewCourse(cert.courseId)" class="btn btn-secondary">
+          <i class="bi bi-eye"></i> View Course
+        </button>
+        }
+      </div>
+    </div>
+    }
+  </div>
+  } @else {
+  <!-- Empty State -->
+  <div class="empty-state">
+    <i class="bi bi-award empty-icon"></i>
+    <h3>No Certificates Yet</h3>
+    <p>Complete courses to earn certificates!</p>
+    <a routerLink="/courses" class="btn btn-primary">Browse Courses</a>
+  </div>
+  } }
+</div>

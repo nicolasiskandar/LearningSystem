@@ -4,6 +4,8 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CourseService } from '../services/course.service';
 import { UserService } from '../services/user.service';
 import { Course, Lesson } from '../models/course.model';
+import { Certificate } from '../models/certificate.model';
+import { CertificateService } from '../services/certificate.service';
 
 @Component({
   selector: 'app-course-details',
@@ -16,6 +18,7 @@ export class CourseDetails implements OnInit {
   protected router = inject(Router);
   private courseService = inject(CourseService);
   private userService = inject(UserService);
+  private certificateService = inject(CertificateService);
 
   course = signal<Course | null>(null);
   instructorName = signal<string | null>(null);
@@ -24,6 +27,9 @@ export class CourseDetails implements OnInit {
   error = signal<string | null>(null);
   isEnrolling = signal(false);
   isEnrolled = signal(false);
+  allLessonsCompleted = signal(false);
+  hasCertificate = signal(false);
+  canGenerateCertificate = signal(false);
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -43,6 +49,7 @@ export class CourseDetails implements OnInit {
         this.course.set(course);
         this.checkLoading();
         this.checkEnrollmentStatus(id);
+        this.checkCertificateStatus(id);
 
         // Fetch instructor details
         this.userService.getUser(course.createdBy).subscribe({
@@ -74,6 +81,9 @@ export class CourseDetails implements OnInit {
       this.userService.getEnrolledCourses(user.id).subscribe({
         next: (courses) => {
           this.isEnrolled.set(courses.some((c) => c.id === courseId));
+          if (this.isEnrolled()) {
+            this.checkAllLessonsCompleted(courseId, user.id);
+          }
         },
         error: (err) => console.error('Error checking enrollment status:', err),
       });
@@ -137,5 +147,85 @@ export class CourseDetails implements OnInit {
     if (this.course()) {
       this.isLoading.set(false);
     }
+  }
+
+  checkCertificateStatus(courseId: number): void {
+    this.userService.getMe().subscribe({
+      next: (user) => {
+        if (user) {
+          this.certificateService.getCertificateForCourse(user.id, courseId).subscribe({
+            next: (cert) => {
+              this.hasCertificate.set(cert != null);
+              this.updateCanGenerateCertificate();
+            },
+            error: (err) => {
+              if (err.status !== 404) {
+                console.error('Error checking certificate status:', err);
+              }
+              this.hasCertificate.set(false);
+              this.updateCanGenerateCertificate();
+            },
+          });
+        }
+      },
+      error: (error) => {
+        console.error('Error fetching user:', error);
+      },
+    });
+  }
+
+  checkAllLessonsCompleted(courseId: number, userId: number): void {
+    this.courseService.areAllLessonsCompleted(courseId, userId).subscribe({
+      next: (allCompleted) => {
+        this.allLessonsCompleted.set(allCompleted);
+        this.updateCanGenerateCertificate();
+      },
+      error: (err) => {
+        console.error('Error checking lesson completion:', err);
+      },
+    });
+  }
+
+  updateCanGenerateCertificate(): void {
+    this.canGenerateCertificate.set(
+      this.isEnrolled() && this.allLessonsCompleted() && !this.hasCertificate()
+    );
+  }
+
+  generateCertificate(): void {
+    const course = this.course();
+    if (!course) return;
+
+    this.userService.getMe().subscribe({
+      next: (user) => {
+        if (!user) {
+          alert('You must be logged in to generate a certificate.');
+          this.router.navigate(['/login']);
+          return;
+        }
+
+        this.certificateService.generateCertificate(user.id, course.id).subscribe({
+          next: (cert) => {
+            this.hasCertificate.set(true);
+            this.updateCanGenerateCertificate();
+            alert('Certificate generated successfully! You can view it in "My Certificates".');
+          },
+          error: (err) => {
+            if (err.status === 400) {
+              alert(err.error.message);
+            } else if (err.status === 403) {
+              alert('You have not completed all lessons in this course.');
+            } else {
+              alert('An error occurred while generating the certificate.');
+            }
+          },
+        });
+      },
+      error: (err) => {
+        console.error('Error fetching user:', err);
+        alert('Unable to verify user. Please log in again.');
+        this.router.navigate(['/login']);
+      },
+    });
   }
 }

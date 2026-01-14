@@ -7,6 +7,7 @@ import { MyCourses } from './my-courses/my-courses';
 import { Profile } from './profile/profile';
 import { ChangePasswordComponent } from './change-password/change-password';
 import { LessonPlayer } from './lesson-player/lesson-player';
+import { MyCertificatesComponent } from './my-certificates/my-certificates';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -17,5 +18,6 @@ export const routes: Routes = [
   { path: 'my-courses', component: MyCourses },
   { path: 'courses/:courseId/learn/lecture/:lessonId', component: LessonPlayer },
   { path: 'courses/:id', component: CourseDetails },
-  { path: '', redirectTo: 'courses', pathMatch: 'full' }
+  { path: 'certificates', component: MyCertificatesComponent },
+  { path: '', redirectTo: 'courses', pathMatch: 'full' },
 ];

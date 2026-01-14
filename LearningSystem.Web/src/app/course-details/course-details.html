@@ -63,7 +63,11 @@
       <div class="curriculum-info">{{ lessons().length }} lessons</div>
       <div class="lesson-list">
         @for (lesson of lessons(); track lesson.id) {
-        <div class="lesson-item" [class.clickable]="isEnrolled()" (click)="navigateToLesson(lesson.id)">
+        <div
+          class="lesson-item"
+          [class.clickable]="isEnrolled()"
+          (click)="navigateToLesson(lesson.id)"
+        >
           <div class="lesson-info">
             <i class="bi bi-play-circle-fill"></i>
             <span class="lesson-title">{{ lesson.title }}</span>
@@ -88,6 +92,15 @@
       <button class="btn btn-enroll" (click)="enroll()" [disabled]="isEnrolling()">
         @if (isEnrolling()) { Enrolling... } @else { Enroll Now }
       </button>
+      } @if (hasCertificate()) {
+      <button
+        class="btn-certificate btn-certificate-secondary"
+        (click)="router.navigate(['/certificates'])"
+      >
+        View Certificate
+      </button>
+      } @if (canGenerateCertificate()) {
+      <button class="btn-certificate" (click)="generateCertificate()">Generate Certificate</button>
       }
 
       <p class="text-center small text-muted">30-Day Money-Back Guarantee</p>

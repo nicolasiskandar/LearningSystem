@@ -5,10 +5,16 @@
         <h3 class="page-title mb-0">Online Courses</h3>
       </div>
       <div class="col-sm-6 text-end">
-        <select class="form-select category-select w-auto d-inline-block" [ngModel]="selectedCategoryId()" (ngModelChange)="selectedCategoryId.set($event === 'null' ? undefined : $event); onCategoryChange()">
+        <select
+          class="form-select category-select w-auto d-inline-block"
+          [ngModel]="selectedCategoryId()"
+          (ngModelChange)="
+            selectedCategoryId.set($event === 'null' ? undefined : $event); onCategoryChange()
+          "
+        >
           <option [ngValue]="undefined">All Categories</option>
           @for (category of categories(); track category.id) {
-            <option [ngValue]="category.id">{{ category.name }}</option>
+          <option [ngValue]="category.id">{{ category.name }}</option>
           }
         </select>
       </div>
@@ -33,7 +39,11 @@
     <div class="course-grid">
       @for (course of courses(); track course.id) {
       <div class="course-card">
-        <div class="course-thumbnail" [routerLink]="['/courses', course.id]" style="cursor: pointer;">
+        <div
+          class="course-thumbnail"
+          [routerLink]="['/courses', course.id]"
+          style="cursor: pointer"
+        >
           <img [src]="course.thumbnail || 'assets/img/photo1.png'" [alt]="course.title" />
           <span class="badge-category">{{ course.category }}</span>
         </div>
@@ -45,13 +55,22 @@
             </span>
           </div>
 
-          <h5 class="course-title" [title]="course.title" [routerLink]="['/courses', course.id]" style="cursor: pointer;">{{ course.title }}</h5>
+          <h5
+            class="course-title"
+            [title]="course.title"
+            [routerLink]="['/courses', course.id]"
+            style="cursor: pointer"
+          >
+            {{ course.title }}
+          </h5>
           <p class="course-description">{{ course.shortDescription }}</p>
 
           <div class="course-footer">
             <div class="course-instructor">
               <i class="bi bi-person"></i>
-              <span>{{ instructorNames()[course.createdBy] || 'Instructor #' + course.createdBy }}</span>
+              <span>{{
+                instructorNames()[course.createdBy] || 'Instructor #' + course.createdBy
+              }}</span>
             </div>
             <button class="btn-view" [routerLink]="['/courses', course.id]">View Course</button>
           </div>
@@ -69,13 +88,9 @@
     <div class="load-more-container">
       <button class="btn-load-more" (click)="loadMore()" [disabled]="isMoreLoading()">
         @if (isMoreLoading()) {
-          <span class="spinner-sm"></span> Loading...
-        } @else {
-          Load More
-        }
+        <span class="spinner-sm"></span> Loading... } @else { Load More }
       </button>
     </div>
-    }
-    }
+    } }
   </div>
 </div>
