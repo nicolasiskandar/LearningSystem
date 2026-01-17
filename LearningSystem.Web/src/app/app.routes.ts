@@ -8,6 +8,7 @@ import { Profile } from './profile/profile';
 import { ChangePasswordComponent } from './change-password/change-password';
 import { LessonPlayer } from './lesson-player/lesson-player';
 import { MyCertificatesComponent } from './my-certificates/my-certificates';
+import { AdminUsersComponent } from './admin/users/admin-users';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -19,5 +20,6 @@ export const routes: Routes = [
   { path: 'courses/:courseId/learn/lecture/:lessonId', component: LessonPlayer },
   { path: 'courses/:id', component: CourseDetails },
   { path: 'certificates', component: MyCertificatesComponent },
+  { path: 'admin/users', component: AdminUsersComponent },
   { path: '', redirectTo: 'courses', pathMatch: 'full' },
 ];

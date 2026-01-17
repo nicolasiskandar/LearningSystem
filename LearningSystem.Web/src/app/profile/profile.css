@@ -150,33 +150,32 @@
 }
 
 /* Reuse Course Grid Styles */
-/* These should match courses.css but added here for encapsulation if not global */
+/* Matching my-courses.css styles for consistency */
 .course-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.5rem;
+  gap: 25px;
 }
 
 .course-card {
   background: white;
   border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   display: flex;
   flex-direction: column;
-  cursor: pointer;
-  border: 1px solid #f3f4f6;
+  height: 100%;
 }
 
 .course-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 .course-thumbnail {
   position: relative;
-  height: 160px;
+  height: 180px;
 }
 
 .course-thumbnail img {
@@ -190,32 +189,38 @@
   top: 12px;
   right: 12px;
   background: rgba(255, 255, 255, 0.95);
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 0.75rem;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
   font-weight: 600;
-  color: #111827;
+  color: #333;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .course-content {
-  padding: 1.25rem;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   flex: 1;
 }
 
+.course-meta {
+  margin-bottom: 10px;
+}
+
 .course-title {
-  margin: 0.5rem 0;
-  font-size: 1.1rem;
+  margin: 0 0 10px 0;
+  font-size: 1.2rem;
   font-weight: 600;
-  color: #111827;
+  color: #333;
   line-height: 1.4;
 }
 
 .course-description {
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin-bottom: 1.25rem;
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 20px;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -224,33 +229,35 @@
 
 .course-footer {
   margin-top: auto;
+  display: flex;
+  justify-content: flex-end; /* Align button to right or stick to left? Profile had simple button */
 }
 
 .btn-view {
-  padding: 0.5rem 1rem;
-  font-size: 0.85rem;
+  padding: 8px 16px;
+  font-size: 0.9rem;
   font-weight: 500;
   background-color: transparent;
-  border: 1px solid var(--primary-color, #007bff);
-  color: var(--primary-color, #007bff);
+  border: 1px solid #667eea;
+  color: #667eea;
   border-radius: 6px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
   text-decoration: none;
   display: inline-block;
 }
 
 .btn-view:hover {
-  background-color: var(--primary-color, #007bff);
+  background-color: #667eea;
   color: white;
 }
 
 .difficulty {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
-  padding: 2px 8px;
-  border-radius: 4px;
+  padding: 4px 10px;
+  border-radius: 6px;
   background: #f3f4f6;
   color: #6b7280;
 }
@@ -282,6 +289,26 @@
   padding: 1rem;
   border-radius: 8px;
   text-align: center;
+}
+
+/* Browse Courses Button Styling */
+.btn-browse-courses {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 12px 30px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  text-decoration: none;
+  border-radius: 30px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-browse-courses:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+  color: white;
 }
 
 @keyframes spin {

@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
-import { User } from '../models/user.model';
+import { User, CreateUserDto, UpdateUserDto } from '../models/user.model';
 import { AuthResponse, LoginRequest, RegisterRequest } from '../models/auth.models';
 import { Course } from '../models/course.model';
 
@@ -13,6 +13,26 @@ export class UserService {
   private apiUrl = 'http://localhost:5142/api';
 
   currentUser = signal<AuthResponse | null>(this.getUserFromStorage());
+
+  getUsers(): Observable<User[]> {
+    const headers = this.getHeadersForLogin();
+    return this.http.get<User[]>(`${this.apiUrl}/Users`, { headers });
+  }
+
+  createUser(user: CreateUserDto): Observable<User> {
+    const headers = this.getHeadersForLogin();
+    return this.http.post<User>(`${this.apiUrl}/Users`, user, { headers });
+  }
+
+  updateUser(id: number, user: UpdateUserDto): Observable<User> {
+    const headers = this.getHeadersForLogin();
+    return this.http.put<User>(`${this.apiUrl}/Users/${id}`, user, { headers });
+  }
+
+  deleteUser(id: number): Observable<void> {
+    const headers = this.getHeadersForLogin();
+    return this.http.delete<void>(`${this.apiUrl}/Users/${id}`, { headers });
+  }
 
   getUser(id: number): Observable<User> {
     return this.http.get<User>(`${this.apiUrl}/Users/${id}`);

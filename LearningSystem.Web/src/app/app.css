@@ -17,6 +17,32 @@
   width: 100%;
 }
 
+.btn-browse-courses {
+  display: inline-block;
+  padding: 0.5rem 0;
+  background-color: transparent;
+  color: var(--primary-color, #3b82f6);
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  box-shadow: none;
+}
+
+.btn-browse-courses:hover {
+  color: var(--primary-hover, #2563eb);
+  text-decoration: underline;
+  transform: none;
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.btn-browse-courses:active {
+  transform: none;
+}
+
 @media (max-width: 768px) {
   .app-layout {
     flex-direction: column;
