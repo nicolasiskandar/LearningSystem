@@ -63,7 +63,11 @@
       <div class="curriculum-info">{{ lessons().length }} lessons</div>
       <div class="lesson-list">
         @for (lesson of lessons(); track lesson.id) {
-        <div class="lesson-item">
+        <div
+          class="lesson-item"
+          [class.clickable]="isEnrolled()"
+          (click)="navigateToLesson(lesson.id)"
+        >
           <div class="lesson-info">
             <i class="bi bi-play-circle-fill"></i>
             <span class="lesson-title">{{ lesson.title }}</span>
@@ -81,19 +85,24 @@
   <div class="content-right">
     <div class="sidebar card sticky-sidebar">
       <h2 class="price-tag">Free</h2>
-      <button 
-        class="btn btn-enroll" 
-        (click)="enroll()" 
-        [disabled]="isEnrolling() || isEnrolled()"
-        [class.enrolled]="isEnrolled()">
-        @if (isEnrolling()) {
-          Enrolling...
-        } @else if (isEnrolled()) {
-          Already enrolled
-        } @else {
-          Enroll Now
-        }
+
+      @if (isEnrolled()) {
+      <button class="btn btn-enroll enrolled" (click)="startCourse()">Go to Course</button>
+      } @else {
+      <button class="btn btn-enroll" (click)="enroll()" [disabled]="isEnrolling()">
+        @if (isEnrolling()) { Enrolling... } @else { Enroll Now }
       </button>
+      } @if (hasCertificate()) {
+      <button
+        class="btn-certificate btn-certificate-secondary"
+        (click)="router.navigate(['/certificates'])"
+      >
+        View Certificate
+      </button>
+      } @if (canGenerateCertificate()) {
+      <button class="btn-certificate" (click)="generateCertificate()">Generate Certificate</button>
+      }
+
       <p class="text-center small text-muted">30-Day Money-Back Guarantee</p>
       <div class="course-includes">
         <h6>This course includes:</h6>

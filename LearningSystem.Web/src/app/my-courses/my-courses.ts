@@ -1,20 +1,19 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { CourseService } from '../services/course.service';
 import { UserService } from '../services/user.service';
 import { Course } from '../models/course.model';
 
 @Component({
   selector: 'app-my-courses',
-  standalone: true,
   imports: [CommonModule, RouterModule],
   templateUrl: './my-courses.html',
   styleUrl: './my-courses.css',
 })
 export class MyCourses implements OnInit {
-  private courseService = inject(CourseService);
   private userService = inject(UserService);
+  private router = inject(Router);
 
   courses = signal<Course[]>([]);
   isLoading = signal(true);
@@ -26,8 +25,7 @@ export class MyCourses implements OnInit {
     if (user) {
       this.loadEnrolledCourses(user.id);
     } else {
-      this.error.set('Please log in to view your courses.');
-      this.isLoading.set(false);
+      this.router.navigate(['/login']);
     }
   }
 

@@ -55,6 +55,20 @@ export class UserService {
     this.currentUser.set(null);
   }
 
+  public getHeadersForLogin(): HttpHeaders {
+    const user = this.currentUser();
+    const token = user?.token;
+
+    if (token && this.isTokenExpired(token)) {
+      this.logout();
+      return new HttpHeaders();
+    }
+
+    let headers = new HttpHeaders();
+    if (token) headers = headers.set('Authorization', `Bearer ${token}`);
+    return headers;
+  }
+
   private handleAuthSuccess(response: AuthResponse) {
     localStorage.setItem('user', JSON.stringify(response));
     this.currentUser.set(response);
@@ -65,11 +79,13 @@ export class UserService {
     return userStr ? JSON.parse(userStr) : null;
   }
 
-  private getHeadersForLogin(): HttpHeaders {
-    const user = this.currentUser();
-    const token = user?.token;
-    let headers = new HttpHeaders();
-    if (token) headers = headers.set('Authorization', `Bearer ${token}`);
-    return headers;
+  private isTokenExpired(token: string): boolean {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const now = Math.floor(Date.now() / 1000);
+      return payload.exp < now;
+    } catch {
+      return true;
+    }
   }
 }
