@@ -5,22 +5,22 @@ import { CourseService } from '../services/course.service';
 import { CommonModule } from '@angular/common';
 import { Certificate } from '../models/certificate.model';
 import { Course } from '../models/course.model';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-my-certificates',
   templateUrl: './my-certificates.html',
   styleUrls: ['./my-certificates.css'],
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
 })
 export class MyCertificatesComponent implements OnInit {
-  // Use a signal for certificates
   certificates = signal<(Certificate & { course?: Course })[]>([]);
   loading = signal(true);
 
   constructor(
     private certificateService: CertificateService,
     private userService: UserService,
-    private courseService: CourseService
+    private courseService: CourseService,
   ) {}
 
   ngOnInit(): void {
