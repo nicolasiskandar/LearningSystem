@@ -54,7 +54,8 @@ public class UserService : IUserService
         if (!result.Succeeded)
             throw new UserRegistrationFailedException();
 
-        await _userManager.AddToRoleAsync(user, Roles.Student.ToString());
+        var roleName = !string.IsNullOrEmpty(command.RoleName) ? command.RoleName : Roles.Student.ToString();
+        await _userManager.AddToRoleAsync(user, roleName);
 
         await _cacheService.RemoveAsync("users-all");
 
@@ -129,6 +130,13 @@ public class UserService : IUserService
         var result = await _userManager.UpdateAsync(user);
         if (!result.Succeeded)
             throw new UserUpdateFailedException();
+
+        if (!string.IsNullOrEmpty(command.RoleName))
+        {
+            var currentRoles = await _userManager.GetRolesAsync(user);
+            await _userManager.RemoveFromRolesAsync(user, currentRoles);
+            await _userManager.AddToRoleAsync(user, command.RoleName);
+        }
 
         await _cacheService.RemoveAsync($"user-{command.Id}");
         await _cacheService.RemoveAsync("users-all");

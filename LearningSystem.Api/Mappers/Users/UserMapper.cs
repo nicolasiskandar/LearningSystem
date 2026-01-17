@@ -28,7 +28,8 @@ public class UserMapper : IUserMapper
         return new CreateUserCommand(
             dto.FullName,
             dto.Email,
-            dto.Password
+            dto.Password,
+            dto.RoleName
         );
     }
 
@@ -37,7 +38,8 @@ public class UserMapper : IUserMapper
         return new UpdateUserCommand(
             id,
             dto.FullName,
-            dto.Email
+            dto.Email,
+            dto.RoleName
         );
     }
 }

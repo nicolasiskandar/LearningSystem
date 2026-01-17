@@ -25,9 +25,9 @@ public class CourseConfiguration : IEntityTypeConfiguration<Course>
                .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(c => c.CreatedByNavigation)
-               .WithMany(u => u.Courses)
-               .HasForeignKey(c => c.CreatedBy)
-               .OnDelete(DeleteBehavior.Restrict);
+           .WithMany(u => u.Courses)
+           .HasForeignKey(c => c.CreatedBy)
+           .OnDelete(DeleteBehavior.Cascade);
 
     }
 }

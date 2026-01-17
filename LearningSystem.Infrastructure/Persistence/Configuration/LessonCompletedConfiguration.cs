@@ -20,6 +20,6 @@ public class LessonCompletedConfiguration : IEntityTypeConfiguration<LessonCompl
         builder.HasOne(lc => lc.User)
                .WithMany(u => u.LessonsCompleted)
                .HasForeignKey(lc => lc.UserId)
-               .OnDelete(DeleteBehavior.Restrict);
+               .OnDelete(DeleteBehavior.Cascade);
     }
 }

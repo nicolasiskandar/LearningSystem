@@ -21,7 +21,17 @@ public class UserRepository : IUserRepository
 
     public async Task DeleteUserAsync(User user)
     {
+        var userDel = await _context.Users
+            .Include(u => u.Courses)
+            .Include(u => u.UserCourses)
+            .Include(u => u.Certificates)
+            .FirstOrDefaultAsync(u => u.Id == user.Id);
+
+        _context.Certificates.RemoveRange(user.Certificates);
+        _context.UserCourses.RemoveRange(user.UserCourses);
+        _context.Courses.RemoveRange(user.Courses);
         _context.Users.Remove(user);
+
         await _context.SaveChangesAsync();
     }
 

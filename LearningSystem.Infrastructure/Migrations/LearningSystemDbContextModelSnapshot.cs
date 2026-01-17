@@ -17,7 +17,7 @@ namespace LearningSystem.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.11")
+                .HasAnnotation("ProductVersion", "9.0.12")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -673,7 +673,7 @@ namespace LearningSystem.Infrastructure.Migrations
                     b.HasOne("LearningSystem.Domain.Entities.User", "User")
                         .WithMany("Certificates")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Course");
@@ -730,7 +730,7 @@ namespace LearningSystem.Infrastructure.Migrations
                     b.HasOne("LearningSystem.Domain.Entities.User", "User")
                         .WithMany("LessonsCompleted")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Lesson");
@@ -787,7 +787,7 @@ namespace LearningSystem.Infrastructure.Migrations
                     b.HasOne("LearningSystem.Domain.Entities.User", "User")
                         .WithMany("QuizAttempts")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Quiz");
@@ -833,7 +833,7 @@ namespace LearningSystem.Infrastructure.Migrations
                     b.HasOne("LearningSystem.Domain.Entities.User", "User")
                         .WithMany("UserCourses")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Course");
