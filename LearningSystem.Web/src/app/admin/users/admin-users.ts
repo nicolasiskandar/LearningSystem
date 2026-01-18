@@ -35,10 +35,6 @@ export class AdminUsersComponent implements OnInit {
   };
 
   ngOnInit() {
-    this.userService.getMe().subscribe({
-      next: (user) => console.log(user),
-    });
-
     if (!this.userService.currentUser()) {
       this.router.navigate(['/login']);
       return;

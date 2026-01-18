@@ -21,3 +21,42 @@ export interface Lesson {
   estimatedDuration: number;
   isCompleted?: boolean;
 }
+
+export interface CreateCourseDto {
+  title: string;
+  shortDescription: string;
+  longDescription: string;
+  categoryId: number;
+  difficulty: string;
+  createdBy: number;
+  thumbnail: string;
+  isPublished: boolean;
+}
+
+export interface UpdateCourseDto {
+  title: string;
+  shortDescription: string;
+  longDescription: string;
+  categoryId: number;
+  difficulty: string;
+  thumbnail: string;
+  isPublished: boolean;
+}
+
+export interface CreateLessonDto {
+  courseId: number;
+  title: string;
+  content: string;
+  videoUrl?: string;
+  order: number;
+  estimatedDuration: number;
+}
+
+export interface UpdateLessonDto {
+  courseId: number;
+  title: string;
+  content: string;
+  videoUrl?: string;
+  order: number;
+  estimatedDuration: number;
+}

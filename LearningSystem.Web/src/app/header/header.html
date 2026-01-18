@@ -9,20 +9,17 @@
 
     <div class="header-actions">
       @if (userService.currentUser(); as user) {
-      <div class="user-menu-item">
-        @if (user.roleName === 'SuperAdmin') {
-        <a routerLink="/admin/users" class="nav-link manage-users-link">Manage Users</a>
-        }
-        <a routerLink="/profile" class="user-link">
-          <img src="default-pfp.png" class="user-avatar" alt="User Image" />
-          <span class="user-name">{{ user.fullName }}</span>
-        </a>
-      </div>
+        <div class="user-menu-item">
+          <a routerLink="/profile" class="user-link">
+            <img src="default-pfp.png" class="user-avatar" alt="User Image" />
+            <span class="user-name">{{ user.fullName }}</span>
+          </a>
+        </div>
       } @else {
-      <div class="auth-links">
-        <a routerLink="/login" class="nav-link">Login</a>
-        <a routerLink="/register" class="nav-link">Register</a>
-      </div>
+        <div class="auth-links">
+          <a routerLink="/login" class="nav-link">Login</a>
+          <a routerLink="/register" class="nav-link">Register</a>
+        </div>
       }
     </div>
   </div>

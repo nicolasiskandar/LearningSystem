@@ -1,7 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, forkJoin } from 'rxjs';
-import { Course, Lesson } from '../models/course.model';
+import {
+  Course,
+  Lesson,
+  CreateCourseDto,
+  UpdateCourseDto,
+  CreateLessonDto,
+  UpdateLessonDto,
+} from '../models/course.model';
 import { Category } from '../models/category.model';
 import { UserService } from './user.service';
 
@@ -29,12 +36,42 @@ export class CourseService {
     return this.http.get<Course>(`${this.apiUrl}/Courses/${id}`);
   }
 
+  createCourse(course: CreateCourseDto): Observable<Course> {
+    const headers = this.userService.getHeadersForLogin();
+    return this.http.post<Course>(`${this.apiUrl}/Courses`, course, { headers });
+  }
+
+  updateCourse(id: number, course: UpdateCourseDto): Observable<Course> {
+    const headers = this.userService.getHeadersForLogin();
+    return this.http.put<Course>(`${this.apiUrl}/Courses/${id}`, course, { headers });
+  }
+
+  deleteCourse(id: number): Observable<void> {
+    const headers = this.userService.getHeadersForLogin();
+    return this.http.delete<void>(`${this.apiUrl}/Courses/${id}`, { headers });
+  }
+
   getLessons(courseId: number): Observable<Lesson[]> {
     return this.http.get<Lesson[]>(`${this.apiUrl}/lessons/course/${courseId}`);
   }
 
   getLesson(id: number): Observable<Lesson> {
     return this.http.get<Lesson>(`${this.apiUrl}/lessons/${id}`);
+  }
+
+  createLesson(lesson: CreateLessonDto): Observable<Lesson> {
+    const headers = this.userService.getHeadersForLogin();
+    return this.http.post<Lesson>(`${this.apiUrl}/lessons`, lesson, { headers });
+  }
+
+  updateLesson(id: number, lesson: UpdateLessonDto): Observable<Lesson> {
+    const headers = this.userService.getHeadersForLogin();
+    return this.http.put<Lesson>(`${this.apiUrl}/lessons/${id}`, lesson, { headers });
+  }
+
+  deleteLesson(id: number): Observable<void> {
+    const headers = this.userService.getHeadersForLogin();
+    return this.http.delete<void>(`${this.apiUrl}/lessons/${id}`, { headers });
   }
 
   completeLesson(lessonId: number): Observable<void> {

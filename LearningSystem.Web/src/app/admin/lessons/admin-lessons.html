@@ -1,0 +1,92 @@
+<div class="admin-container">
+  <div class="header">
+    <div class="title-with-back">
+      <button class="back-btn" (click)="goBack()">&larr; Back to Courses</button>
+      <h1>Lesson Management (Course ID: {{ courseId() }})</h1>
+    </div>
+    <button class="create-btn" (click)="openCreateModal()">Create Lesson</button>
+  </div>
+
+  @if (isLoading()) {
+    <div class="loading">Loading lessons...</div>
+  } @else {
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Order</th>
+          <th>Title</th>
+          <th>Duration (min)</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (lesson of lessons(); track lesson.id) {
+          <tr>
+            <td>{{ lesson.order }}</td>
+            <td>{{ lesson.title }}</td>
+            <td>{{ lesson.estimatedDuration }}</td>
+            <td class="actions">
+              <button class="edit-btn" (click)="openEditModal(lesson)">Edit</button>
+              <button class="delete-btn" (click)="deleteLesson(lesson)">Delete</button>
+            </td>
+          </tr>
+        }
+        @if (lessons().length === 0) {
+          <tr>
+            <td colspan="4" class="no-data">No lessons found for this course.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+
+  <!-- Modal -->
+  @if (showModal()) {
+    <div class="modal-backdrop">
+      <div class="modal large">
+        <div class="modal-header">
+          <h2>
+            {{ modalMode() === 'create' ? 'Create Lesson' : 'Edit Lesson' }}
+          </h2>
+          <button class="close-btn" (click)="closeModal()">&times;</button>
+        </div>
+
+        <div class="modal-body">
+          <form (ngSubmit)="onSubmit()">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="title">Title</label>
+                <input type="text" id="title" [(ngModel)]="formData.title" name="title" required />
+              </div>
+
+              <div class="form-group">
+                <label for="order">Order</label>
+                <input type="number" id="order" [(ngModel)]="formData.order" name="order" required />
+              </div>
+
+              <div class="form-group">
+                <label for="estimatedDuration">Duration (minutes)</label>
+                <input type="number" id="estimatedDuration" [(ngModel)]="formData.estimatedDuration" name="estimatedDuration" required />
+              </div>
+
+              <div class="form-group">
+                <label for="videoUrl">Video URL</label>
+                <input type="text" id="videoUrl" [(ngModel)]="formData.videoUrl" name="videoUrl" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="content">Content (Markdown/Text)</label>
+              <textarea id="content" [(ngModel)]="formData.content" name="content" rows="10" required></textarea>
+            </div>
+
+            <div class="modal-footer">
+              <button type="button" class="cancel-btn" (click)="closeModal()">Cancel</button>
+              <button type="submit" class="save-btn">Save</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  }
+</div>
