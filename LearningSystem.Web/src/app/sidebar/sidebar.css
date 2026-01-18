@@ -73,6 +73,15 @@
   margin: 0;
 }
 
+.nav-header {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #9ca3af;
+  padding: 1.5rem 1rem 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
 /* --- Mobile / Top Navigation Bar --- */
 @media (max-width: 768px) {
   .app-sidebar {

@@ -25,6 +25,33 @@
             <p>Certificates</p>
           </a>
         </li>
+
+        @if (hasAdminAccess()) {
+          <li class="nav-header">ADMINISTRATION</li>
+          
+          <li class="nav-item">
+            <a routerLink="/admin/courses" routerLinkActive="active" class="nav-link">
+              <i class="nav-icon bi bi-book"></i>
+              <p>Manage Courses</p>
+            </a>
+          </li>
+          
+          <li class="nav-item">
+            <a routerLink="/admin/categories" routerLinkActive="active" class="nav-link">
+              <i class="nav-icon bi bi-tags"></i>
+              <p>Manage Categories</p>
+            </a>
+          </li>
+
+          @if (isAdmin()) {
+            <li class="nav-item">
+              <a routerLink="/admin/users" routerLinkActive="active" class="nav-link">
+                <i class="nav-icon bi bi-people"></i>
+                <p>Manage Users</p>
+              </a>
+            </li>
+          }
+        }
       </ul>
     </nav>
   </div>

@@ -121,7 +121,7 @@
   gap: 15px;
 }
 
-.manage-users-link {
+.manage-link {
   color: #555;
   text-decoration: none;
   font-weight: 500;
@@ -131,7 +131,7 @@
   transition: background-color 0.2s;
 }
 
-.manage-users-link:hover {
+.manage-link:hover {
   background-color: #f0f0f0;
   color: #007bff;
 }
