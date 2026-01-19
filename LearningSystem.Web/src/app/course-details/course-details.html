@@ -79,6 +79,29 @@
         }
       </div>
     </div>
+
+    <!-- Quizzes -->
+    <div class="card section-card">
+      <h3>Quizzes</h3>
+      <div class="curriculum-info">{{ quizzes().length }} quizzes</div>
+      <div class="lesson-list">
+        @for (quiz of quizzes(); track quiz.id) {
+        <div
+          class="lesson-item"
+          [class.clickable]="isEnrolled()"
+          (click)="navigateToQuiz(quiz.id)"
+        >
+          <div class="lesson-info">
+            <i class="bi bi-question-circle-fill"></i>
+            <span class="lesson-title">{{ quiz.title }}</span>
+          </div>
+          <span class="lesson-duration">{{ quiz.timeLimit }} min</span>
+        </div>
+        } @empty {
+        <div class="text-muted">No quizzes available.</div>
+        }
+      </div>
+    </div>
   </div>
 
   <!-- Sidebar -->

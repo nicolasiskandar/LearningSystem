@@ -12,6 +12,10 @@ import { AdminUsersComponent } from './admin/users/admin-users';
 import { AdminCategoriesComponent } from './admin/categories/admin-categories';
 import { AdminCoursesComponent } from './admin/courses/admin-courses';
 import { AdminLessonsComponent } from './admin/lessons/admin-lessons';
+import { QuizTakeComponent } from './quiz-take/quiz-take.component';
+import { MyQuizzesComponent } from './my-quizzes/my-quizzes.component';
+import { AdminQuizzesComponent } from './admin/quizzes/admin-quizzes';
+import { AdminQuestionsComponent } from './admin/questions/admin-questions';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -22,10 +26,14 @@ export const routes: Routes = [
   { path: 'my-courses', component: MyCourses },
   { path: 'courses/:courseId/learn/lecture/:lessonId', component: LessonPlayer },
   { path: 'courses/:id', component: CourseDetails },
+  { path: 'quiz/:id', component: QuizTakeComponent },
+  { path: 'my-quizzes', component: MyQuizzesComponent },
   { path: 'certificates', component: MyCertificatesComponent },
   { path: 'admin/users', component: AdminUsersComponent },
   { path: 'admin/categories', component: AdminCategoriesComponent },
   { path: 'admin/courses', component: AdminCoursesComponent },
   { path: 'admin/courses/:courseId/lessons', component: AdminLessonsComponent },
+  { path: 'admin/quizzes', component: AdminQuizzesComponent },
+  { path: 'admin/quizzes/:quizId/questions', component: AdminQuestionsComponent },
   { path: '', redirectTo: 'courses', pathMatch: 'full' },
 ];

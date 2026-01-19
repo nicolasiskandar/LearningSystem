@@ -136,7 +136,7 @@ public class QuizAttemptService : IQuizAttemptService
             throw new NotEnrolledInCourseException(userId, quiz.CourseId);
 
         var questions = await _questionRepository.GetQuestionsByQuizIdAsync(quizAttempt.QuizId);
-        var score = 0;
+        var correctAnswersCount = 0;
 
         foreach (var answer in command.Answers)
         {
@@ -149,7 +149,7 @@ public class QuizAttemptService : IQuizAttemptService
 
                 var correctAnswer = question.Answers.FirstOrDefault(a => a.IsCorrect);
                 if (correctAnswer != null && correctAnswer.Id == answer.AnswerId)
-                    score++;
+                    correctAnswersCount++;
             }
 
             await _quizAttemptAnswerRepository.AddAsync(new QuizAttemptAnswer
@@ -160,7 +160,9 @@ public class QuizAttemptService : IQuizAttemptService
             });
         }
 
-        quizAttempt.Score = score;
+        var totalQuestions = questions.Count;
+        quizAttempt.Score = totalQuestions > 0 ? (int)((double)correctAnswersCount / totalQuestions * 100) : 0;
+
         await _quizAttemptRepository.UpdateQuizAttemptAsync(quizAttempt);
 
         await _cacheService.RemoveAsync($"quizattempt-{command.Id}");

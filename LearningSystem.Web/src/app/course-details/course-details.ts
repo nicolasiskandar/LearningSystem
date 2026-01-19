@@ -6,6 +6,8 @@ import { UserService } from '../services/user.service';
 import { Course, Lesson } from '../models/course.model';
 import { Certificate } from '../models/certificate.model';
 import { CertificateService } from '../services/certificate.service';
+import { QuizService } from '../services/quiz.service';
+import { Quiz } from '../models/quiz.model';
 
 @Component({
   selector: 'app-course-details',
@@ -19,10 +21,12 @@ export class CourseDetails implements OnInit {
   private courseService = inject(CourseService);
   private userService = inject(UserService);
   private certificateService = inject(CertificateService);
+  private quizService = inject(QuizService);
 
   course = signal<Course | null>(null);
   instructorName = signal<string | null>(null);
   lessons = signal<Lesson[]>([]);
+  quizzes = signal<Quiz[]>([]);
   isLoading = signal(true);
   error = signal<string | null>(null);
   isEnrolling = signal(false);
@@ -72,6 +76,15 @@ export class CourseDetails implements OnInit {
       error: (err) => {
         console.error('Error fetching lessons:', err);
       },
+    });
+
+    this.quizService.getQuizzes().subscribe({
+      next: (allQuizzes) => {
+        this.quizzes.set(allQuizzes.filter(q => q.courseId === id));
+      },
+      error: (err) => {
+        console.error('Error fetching quizzes:', err);
+      }
     });
   }
 
@@ -140,6 +153,12 @@ export class CourseDetails implements OnInit {
     const courseId = this.course()?.id;
     if (courseId && this.isEnrolled()) {
       this.router.navigate(['/courses', courseId, 'learn', 'lecture', lessonId]);
+    }
+  }
+
+  navigateToQuiz(quizId: number): void {
+    if (this.isEnrolled()) {
+      this.router.navigate(['/quiz', quizId]);
     }
   }
 

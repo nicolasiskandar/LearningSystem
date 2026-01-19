@@ -1,0 +1,110 @@
+<div class="quiz-container" *ngIf="loading()">
+  <div class="loading-spinner">
+    <div class="spinner"></div>
+    <p>Loading Quiz...</p>
+  </div>
+</div>
+
+<div class="quiz-container" *ngIf="error()">
+  <div class="alert alert-error">
+    <strong>Error!</strong> {{ error() }}
+  </div>
+  <button (click)="goBack()" class="btn btn-secondary">Back</button>
+</div>
+
+<div class="quiz-container" *ngIf="!loading() && !error() && quiz() as q">
+  
+  <!-- Quiz Start Screen -->
+  <div *ngIf="!attempt() && !result()" class="quiz-card start-screen">
+    <div class="card-header">
+      <h1>{{ q.title }}</h1>
+    </div>
+    <div class="card-body">
+      <div class="quiz-info">
+        <div class="info-item">
+          <i class="bi bi-trophy"></i>
+          <span>Passing Score: <strong>{{ q.passingScore }}%</strong></span>
+        </div>
+        <div class="info-item">
+          <i class="bi bi-clock"></i>
+          <span>Time Limit: <strong>{{ q.timeLimit }} min</strong></span>
+        </div>
+        <div class="info-item">
+          <i class="bi bi-question-circle"></i>
+          <span>Questions: <strong>{{ q.questions.length }}</strong></span>
+        </div>
+      </div>
+      
+      <div class="actions">
+        <button (click)="startQuiz()" class="btn btn-primary btn-lg">Start Quiz</button>
+        <button (click)="goBack()" class="btn btn-secondary btn-lg">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz Taking Screen -->
+  <div *ngIf="attempt() && !result()" class="quiz-card taking-screen">
+    <div class="card-header">
+      <h2>{{ q.title }}</h2>
+      <div class="timer" *ngIf="q.timeLimit > 0">
+        <!-- Timer implementation could go here -->
+        <i class="bi bi-stopwatch"></i> {{ q.timeLimit }} min
+      </div>
+    </div>
+    
+    <div class="card-body">
+      <div *ngFor="let question of q.questions; let i = index" class="question-block">
+        <div class="question-title">
+          <span class="question-number">{{ i + 1 }}</span>
+          <span class="question-text">{{ question.questionText }}</span>
+        </div>
+        
+        <div class="answers-list">
+          <label *ngFor="let answer of question.answers" class="answer-option" [class.selected]="selectedAnswers[question.id] === answer.id">
+            <input type="radio" 
+                   [name]="'question-' + question.id" 
+                   [value]="answer.id" 
+                   (change)="onSelectAnswer(question.id, answer.id)">
+            <span class="answer-text">{{ answer.answerText }}</span>
+            <i class="bi bi-check-circle-fill check-icon" *ngIf="selectedAnswers[question.id] === answer.id"></i>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-footer">
+      <button (click)="submitQuiz()" [disabled]="submitting()" class="btn btn-success btn-lg btn-block">
+        {{ submitting() ? 'Submitting...' : 'Submit Quiz' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Quiz Result Screen -->
+  <div *ngIf="result() as r" class="quiz-card result-screen">
+    <div class="card-header text-center">
+      <h2>Quiz Results</h2>
+    </div>
+    
+    <div class="card-body text-center">
+      <div class="score-circle" [class.pass]="r.score >= q.passingScore" [class.fail]="r.score < q.passingScore">
+        <span class="score-value">{{ r.score }}%</span>
+        <span class="score-label">Score</span>
+      </div>
+
+      <div *ngIf="r.score >= q.passingScore" class="result-message success">
+        <h3>Congratulations!</h3>
+        <p>You passed the quiz.</p>
+      </div>
+      
+      <div *ngIf="r.score < q.passingScore" class="result-message fail">
+        <h3>Keep Trying!</h3>
+        <p>Unfortunately, you did not pass.</p>
+      </div>
+    </div>
+
+    <div class="card-footer text-center">
+      <button (click)="goBack()" class="btn btn-primary">Back to Course</button>
+    </div>
+  </div>
+
+</div>
