@@ -20,10 +20,13 @@ export class CourseService {
   private userService = inject(UserService);
   private apiUrl = 'http://localhost:5142/api';
 
-  getCourses(page: number = 1, pageSize: number = 40, categoryId?: number): Observable<Course[]> {
+  getCourses(page: number = 1, pageSize: number = 40, categoryId?: number, searchTerm?: string): Observable<Course[]> {
     let url = `${this.apiUrl}/Courses?page=${page}&pageSize=${pageSize}`;
     if (categoryId) {
       url += `&categoryId=${categoryId}`;
+    }
+    if (searchTerm) {
+      url += `&searchTerm=${searchTerm}`;
     }
     return this.http.get<Course[]>(url);
   }

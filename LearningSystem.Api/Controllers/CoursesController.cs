@@ -21,12 +21,12 @@ public class CoursesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<ICollection<CourseDto>>> GetCourses([FromQuery] int page = 1, [FromQuery] int pageSize = 20, [FromQuery] int? categoryId = null)
+    public async Task<ActionResult<ICollection<CourseDto>>> GetCourses([FromQuery] int page = 1, [FromQuery] int pageSize = 20, [FromQuery] int? categoryId = null, [FromQuery] string? searchTerm = null)
     {
         if (page < 1) page = 1;
         if (pageSize < 1) pageSize = 20;
 
-        var courses = await _courseService.GetCoursesAsync(page, pageSize, categoryId);
+        var courses = await _courseService.GetCoursesAsync(page, pageSize, categoryId, searchTerm);
         var dtos = _courseMapper.Map(courses);
         return Ok(dtos);
     }

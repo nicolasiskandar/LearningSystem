@@ -7,6 +7,19 @@
       </a>
     </div>
 
+    <div class="search-item">
+      <div class="search-link">
+        <i class="fas fa-search"></i>
+        <input 
+          type="text" 
+          class="search-input" 
+          placeholder="Search courses..." 
+          [(ngModel)]="searchTerm" 
+          (keyup.enter)="search()"
+        />
+      </div>
+    </div>
+
     <div class="header-actions">
       @if (userService.currentUser(); as user) {
         <div class="user-menu-item">

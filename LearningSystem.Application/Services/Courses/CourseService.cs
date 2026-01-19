@@ -82,11 +82,17 @@ public class CourseService : ICourseService
         return result;
     }
 
-    public async Task<IEnumerable<CourseResult>> GetCoursesAsync(int page, int pageSize, int? categoryId = null)
+    public async Task<IEnumerable<CourseResult>> GetCoursesAsync(int page, int pageSize, int? categoryId = null, string? searchTerm = null)
     {
         if (categoryId.HasValue)
         {
             var courses = await _courseRepository.GetCoursesByCategoryIdAsync(categoryId.Value, page, pageSize);
+            return _courseMapper.Map(courses);
+        }
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            var courses = await _courseRepository.GetAllCoursesAsync(page, pageSize, searchTerm);
             return _courseMapper.Map(courses);
         }
 

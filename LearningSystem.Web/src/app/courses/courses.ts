@@ -1,6 +1,6 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, ActivatedRoute } from '@angular/router';
 import { CourseService } from '../services/course.service';
 import { UserService } from '../services/user.service';
 import { Course } from '../models/course.model';
@@ -16,6 +16,7 @@ import { FormsModule } from '@angular/forms';
 export class Courses implements OnInit {
   private courseService = inject(CourseService);
   private userService = inject(UserService);
+  private route = inject(ActivatedRoute);
 
   courses = signal<Course[]>([]);
   categories = signal<Category[]>([]);
@@ -27,10 +28,16 @@ export class Courses implements OnInit {
   currentPage = signal(1);
   pageSize = 40;
   hasMore = signal(true);
+  searchTerm = signal<string | undefined>(undefined);
 
   ngOnInit(): void {
     this.loadCategories();
-    this.loadCourses();
+    this.route.queryParams.subscribe(params => {
+      this.searchTerm.set(params['searchTerm']);
+      this.currentPage.set(1);
+      this.courses.set([]);
+      this.loadCourses();
+    });
   }
 
   loadCategories(): void {
@@ -48,7 +55,7 @@ export class Courses implements OnInit {
 
   loadCourses(): void {
     this.isLoading.set(true);
-    this.courseService.getCourses(this.currentPage(), this.pageSize, this.selectedCategoryId()).subscribe({
+    this.courseService.getCourses(this.currentPage(), this.pageSize, this.selectedCategoryId(), this.searchTerm()).subscribe({
       next: (data) => {
         this.courses.set(data);
         this.loadInstructors(data);
@@ -69,7 +76,7 @@ export class Courses implements OnInit {
     this.isMoreLoading.set(true);
     const nextPage = this.currentPage() + 1;
 
-    this.courseService.getCourses(nextPage, this.pageSize, this.selectedCategoryId()).subscribe({
+    this.courseService.getCourses(nextPage, this.pageSize, this.selectedCategoryId(), this.searchTerm()).subscribe({
       next: (data) => {
         if (data.length > 0) {
           this.courses.update((prev) => [...prev, ...data]);

@@ -25,11 +25,18 @@ public class CourseRepository : ICourseRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<ICollection<Course>> GetAllCoursesAsync(int page, int pageSize)
+    public async Task<ICollection<Course>> GetAllCoursesAsync(int page, int pageSize, string? searchTerm = null)
     {
-        return await _context.Courses
+        var query = _context.Courses
                          .Include(c => c.Category)
-                         .Skip((page - 1) * pageSize)
+                         .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            query = query.Where(c => c.Title.ToLower().Contains(searchTerm.ToLower()));
+        }
+
+        return await query.Skip((page - 1) * pageSize)
                          .Take(pageSize)
                          .ToListAsync();
     }
