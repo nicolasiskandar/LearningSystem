@@ -108,7 +108,7 @@ export class QuizTakeComponent implements OnInit {
     // If we have a quiz, try to go back to course, otherwise just go back in history or home
     const quiz = this.quiz();
     if (quiz) {
-        this.router.navigate(['/course', quiz.courseId]);
+        this.router.navigate(['/courses', quiz.courseId]);
     } else {
         this.router.navigate(['/']);
     }

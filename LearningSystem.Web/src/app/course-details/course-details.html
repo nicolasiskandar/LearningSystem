@@ -74,31 +74,21 @@
           </div>
           <span class="lesson-duration">{{ lesson.estimatedDuration }} min</span>
         </div>
-        } @empty {
-        <div class="text-muted">No lessons available.</div>
-        }
-      </div>
-    </div>
-
-    <!-- Quizzes -->
-    <div class="card section-card">
-      <h3>Quizzes</h3>
-      <div class="curriculum-info">{{ quizzes().length }} quizzes</div>
-      <div class="lesson-list">
-        @for (quiz of quizzes(); track quiz.id) {
+        @if (getQuizForLesson(lesson.id); as quiz) {
         <div
-          class="lesson-item"
+          class="lesson-item quiz-item"
           [class.clickable]="isEnrolled()"
           (click)="navigateToQuiz(quiz.id)"
+          style="margin-left: 1.5rem; border-left: 2px solid #e5e7eb; padding-left: 1rem;"
         >
           <div class="lesson-info">
-            <i class="bi bi-question-circle-fill"></i>
-            <span class="lesson-title">{{ quiz.title }}</span>
+            <i class="bi bi-question-circle-fill" style="color: #6366f1;"></i>
+            <span class="lesson-title">Quiz: {{ quiz.title }}</span>
           </div>
           <span class="lesson-duration">{{ quiz.timeLimit }} min</span>
         </div>
-        } @empty {
-        <div class="text-muted">No quizzes available.</div>
+        } } @empty {
+        <div class="text-muted">No lessons available.</div>
         }
       </div>
     </div>

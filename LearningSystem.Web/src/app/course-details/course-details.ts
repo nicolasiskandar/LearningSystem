@@ -7,7 +7,7 @@ import { Course, Lesson } from '../models/course.model';
 import { Certificate } from '../models/certificate.model';
 import { CertificateService } from '../services/certificate.service';
 import { QuizService } from '../services/quiz.service';
-import { Quiz } from '../models/quiz.model';
+import { Quiz, QuizAttempt } from '../models/quiz.model';
 
 @Component({
   selector: 'app-course-details',
@@ -34,6 +34,9 @@ export class CourseDetails implements OnInit {
   allLessonsCompleted = signal(false);
   hasCertificate = signal(false);
   canGenerateCertificate = signal(false);
+
+  userAttempts = signal<QuizAttempt[]>([]);
+  allQuizzesPassed = signal(false);
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -80,11 +83,12 @@ export class CourseDetails implements OnInit {
 
     this.quizService.getQuizzes().subscribe({
       next: (allQuizzes) => {
-        this.quizzes.set(allQuizzes.filter(q => q.courseId === id));
+        this.quizzes.set(allQuizzes.filter((q) => q.courseId === id));
+        this.checkQuizCompletion();
       },
       error: (err) => {
         console.error('Error fetching quizzes:', err);
-      }
+      },
     });
   }
 
@@ -96,11 +100,42 @@ export class CourseDetails implements OnInit {
           this.isEnrolled.set(courses.some((c) => c.id === courseId));
           if (this.isEnrolled()) {
             this.checkAllLessonsCompleted(courseId, user.id);
+            this.fetchUserQuizAttempts(user.id);
           }
         },
         error: (err) => console.error('Error checking enrollment status:', err),
       });
     }
+  }
+
+  fetchUserQuizAttempts(userId: number): void {
+    this.quizService.getQuizAttemptsByUser(userId).subscribe({
+      next: (attempts) => {
+        this.userAttempts.set(attempts);
+        this.checkQuizCompletion();
+      },
+      error: (err) => console.error('Error fetching quiz attempts:', err),
+    });
+  }
+
+  checkQuizCompletion(): void {
+    const currentQuizzes = this.quizzes();
+    // If no quizzes exist for the course, we consider them "passed" (or not applicable)
+    // BUT we need to be careful about initial load state.
+    // Assuming this method is called after quizzes are loaded.
+
+    if (currentQuizzes.length === 0) {
+      this.allQuizzesPassed.set(true);
+    } else {
+      const attempts = this.userAttempts();
+      const allPassed = currentQuizzes.every((quiz) =>
+        attempts.some(
+          (attempt) => attempt.quizId === quiz.id && attempt.score >= quiz.passingScore,
+        ),
+      );
+      this.allQuizzesPassed.set(allPassed);
+    }
+    this.updateCanGenerateCertificate();
   }
 
   enroll(): void {
@@ -162,6 +197,10 @@ export class CourseDetails implements OnInit {
     }
   }
 
+  getQuizForLesson(lessonId: number): Quiz | undefined {
+    return this.quizzes().find((q) => q.lessonId === lessonId);
+  }
+
   private checkLoading() {
     if (this.course()) {
       this.isLoading.set(false);
@@ -207,7 +246,10 @@ export class CourseDetails implements OnInit {
 
   updateCanGenerateCertificate(): void {
     this.canGenerateCertificate.set(
-      this.isEnrolled() && this.allLessonsCompleted() && !this.hasCertificate()
+      this.isEnrolled() &&
+        this.allLessonsCompleted() &&
+        this.allQuizzesPassed() &&
+        !this.hasCertificate(),
     );
   }
 
@@ -223,11 +265,17 @@ export class CourseDetails implements OnInit {
           return;
         }
 
+        // Double check client side validation
+        if (!this.allQuizzesPassed()) {
+          alert('You must complete all quizzes to generate a certificate.');
+          return;
+        }
+
         this.certificateService.generateCertificate(user.id, course.id).subscribe({
           next: (cert) => {
             this.hasCertificate.set(true);
             this.updateCanGenerateCertificate();
-            alert('Certificate generated successfully! You can view it in "My Certificates".');
+            alert('Certificate generated successfully! You can view it in "Certificates".');
           },
           error: (err) => {
             if (err.status === 400) {

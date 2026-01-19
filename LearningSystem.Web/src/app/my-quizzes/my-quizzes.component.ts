@@ -25,28 +25,28 @@ export class MyQuizzesComponent implements OnInit {
     if (user) {
       this.loadData(user.id);
     } else {
-        this.loading.set(false);
+      this.loading.set(false);
     }
   }
 
   loadData(userId: number) {
     forkJoin({
       attempts: this.quizService.getQuizAttemptsByUser(userId),
-      quizzes: this.quizService.getQuizzes()
+      quizzes: this.quizService.getQuizzes(),
     }).subscribe({
       next: ({ attempts, quizzes }) => {
         this.attempts.set(attempts);
-        
+
         const titleMap = new Map<number, string>();
-        quizzes.forEach(q => titleMap.set(q.id, q.title));
+        quizzes.forEach((q) => titleMap.set(q.id, q.title));
         this.quizTitles.set(titleMap);
-        
+
         this.loading.set(false);
       },
       error: (err) => {
         console.error('Error loading my quizzes', err);
         this.loading.set(false);
-      }
+      },
     });
   }
 
