@@ -5,6 +5,8 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { CourseService } from '../services/course.service';
 import { UserService } from '../services/user.service';
 import { Course, Lesson } from '../models/course.model';
+import { Quiz, QuizAttempt } from '../models/quiz.model';
+import { QuizService } from '../services/quiz.service';
 
 @Component({
   selector: 'app-lesson-player',
@@ -17,6 +19,7 @@ export class LessonPlayer implements OnInit {
   private router = inject(Router);
   private courseService = inject(CourseService);
   private userService = inject(UserService);
+  private quizService = inject(QuizService);
   private sanitizer = inject(DomSanitizer);
 
   courseId = signal<number | null>(null);
@@ -24,6 +27,8 @@ export class LessonPlayer implements OnInit {
 
   course = signal<Course | null>(null);
   lessons = signal<Lesson[]>([]);
+  quizzes = signal<Quiz[]>([]);
+  userAttempts = signal<QuizAttempt[]>([]);
   currentLesson = signal<Lesson | null>(null);
 
   isLoading = signal(true);
@@ -97,6 +102,20 @@ export class LessonPlayer implements OnInit {
         }
       }
     });
+
+    const user = this.userService.currentUser();
+    if (user) {
+      this.fetchUserQuizAttempts(user.id);
+    }
+  }
+
+  fetchUserQuizAttempts(userId: number) {
+    this.quizService.getQuizAttemptsByUser(userId).subscribe({
+      next: (attempts) => {
+        this.userAttempts.set(attempts);
+      },
+      error: (err) => console.error('Error fetching quiz attempts:', err),
+    });
   }
 
   loadCourseData(courseId: number) {
@@ -118,6 +137,15 @@ export class LessonPlayer implements OnInit {
         }
       },
       error: (e) => console.error('Error loading lessons', e),
+    });
+
+    this.quizService.getQuizzes().subscribe({
+      next: (allQuizzes) => {
+        this.quizzes.set(allQuizzes.filter((q) => q.courseId === courseId));
+      },
+      error: (err) => {
+        console.error('Error fetching quizzes:', err);
+      },
     });
   }
 
@@ -171,6 +199,19 @@ export class LessonPlayer implements OnInit {
     this.router.navigate(['/courses', this.courseId(), 'learn', 'lecture', id]);
   }
 
+  navigateToQuiz(quizId: number): void {
+    this.router.navigate(['/quiz', quizId]);
+  }
+
+  getQuizForLesson(lessonId: number): Quiz | undefined {
+    return this.quizzes().find((q) => q.lessonId === lessonId);
+  }
+
+  isQuizCompleted(quiz: Quiz): boolean {
+    const attempts = this.userAttempts();
+    return attempts.some((a) => a.quizId === quiz.id && a.score >= quiz.passingScore);
+  }
+
   markComplete() {
     const l = this.currentLesson();
     if (!l) return;
@@ -216,7 +257,7 @@ export class LessonPlayer implements OnInit {
       list.map((item) => {
         if (item.id === id) return { ...item, isCompleted: completed };
         return item;
-      })
+      }),
     );
 
     if (this.currentLesson()?.id === id) {

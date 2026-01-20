@@ -168,6 +168,17 @@
   border-left: 4px solid #3586f0; /* Udemy purple accent */
 }
 
+/* Quiz Item Styling */
+.sidebar-lesson-item.quiz-item {
+    background-color: #fcfcfd;
+    padding-left: 1.5rem;
+    border-left: 4px solid transparent;
+}
+
+.sidebar-lesson-item.quiz-item:hover {
+    background-color: #f0f2f5;
+}
+
 .checkbox-wrapper {
   padding-top: 2px;
   color: #6a6f73;

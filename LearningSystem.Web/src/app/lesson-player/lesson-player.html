@@ -123,6 +123,29 @@
             </span>
           </div>
         </div>
+        
+        @if (getQuizForLesson(lesson.id); as quiz) {
+          <div
+            class="sidebar-lesson-item quiz-item"
+            [class.completed]="isQuizCompleted(quiz)"
+            (click)="navigateToQuiz(quiz.id)"
+          >
+            <div class="checkbox-wrapper">
+              @if (isQuizCompleted(quiz)) {
+              <i class="bi bi-check-circle-fill" style="color: #6366f1;"></i>
+              } @else {
+              <i class="bi bi-question-circle" style="color: #6366f1;"></i>
+              }
+            </div>
+            <div class="item-info">
+              <span class="item-title">Quiz: {{ quiz.title }}</span>
+              <span class="item-duration">
+                <i class="bi bi-clock"></i> {{ quiz.timeLimit }} min
+              </span>
+            </div>
+          </div>
+          }
+
         }
       </div>
     </aside>
