@@ -1,52 +1,46 @@
-<div class="container mx-auto p-4">
-  <h1 class="text-2xl font-bold mb-6">My Quizzes</h1>
+<div class="quiz-history-container">
+  <h1 class="page-title">My Quizzes</h1>
 
   @if (loading()) {
-    <div>
-      <p>Loading...</p>
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading your attempts...</p>
     </div>
   }
 
   @if (!loading() && attempts().length === 0) {
-    <div>
+    <div class="empty-state">
+      <i class="bi bi-journal-x"></i>
       <p>You haven't taken any quizzes yet.</p>
+      <button class="browse-btn" routerLink="/courses">Browse Quizzes</button>
     </div>
   }
 
   @if (!loading() && attempts().length > 0) {
-    <div class="overflow-x-auto">
-      <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-        <thead class="bg-gray-100">
+    <div class="table-container">
+      <table class="quiz-table">
+        <thead>
           <tr>
-            <th
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Quiz
-            </th>
-            <th
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Date
-            </th>
-            <th
-              class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-            >
-              Score
-            </th>
+            <th>Quiz Title</th>
+            <th>Date Taken</th>
+            <th>Score</th>
           </tr>
         </thead>
-
-        <tbody class="divide-y divide-gray-200">
+        <tbody>
           @for (attempt of attempts(); track attempt.id) {
             <tr>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="quiz-title-cell">
+                <span class="quiz-icon"><i class="bi bi-journal-text"></i></span>
                 {{ getQuizTitle(attempt.quizId) }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                {{ attempt.attemptDate | date: 'medium' }}
+              <td>
+                {{ attempt.attemptDate | date: 'mediumDate' }}
+                <span class="time-sub">{{ attempt.attemptDate | date: 'shortTime' }}</span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap font-bold">
-                {{ attempt.score }}
+              <td>
+                <span class="score-badge" [class.pass]="attempt.score >= 70" [class.fail]="attempt.score < 70">
+                  {{ attempt.score }}%
+                </span>
               </td>
             </tr>
           }

@@ -1,5 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { QuizService } from '../services/quiz.service';
 import { UserService } from '../services/user.service';
 import { QuizAttempt, Quiz } from '../models/quiz.model';
@@ -8,7 +9,7 @@ import { forkJoin } from 'rxjs';
 @Component({
   selector: 'app-my-quizzes',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './my-quizzes.component.html',
   styleUrl: './my-quizzes.component.css',
 })
@@ -35,6 +36,13 @@ export class MyQuizzesComponent implements OnInit {
       quizzes: this.quizService.getQuizzes(),
     }).subscribe({
       next: ({ attempts, quizzes }) => {
+        // Sort attempts descending by date (most recent first)
+        attempts.sort((a, b) => {
+          const dateA = a.attemptDate ? new Date(a.attemptDate).getTime() : 0;
+          const dateB = b.attemptDate ? new Date(b.attemptDate).getTime() : 0;
+          return dateB - dateA;
+        });
+        
         this.attempts.set(attempts);
 
         const titleMap = new Map<number, string>();
