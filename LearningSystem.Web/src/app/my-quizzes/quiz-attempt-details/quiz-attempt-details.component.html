@@ -1,0 +1,89 @@
+<div class="attempt-details-container" *ngIf="!loading(); else loadingTpl">
+  
+  <!-- Header / Summary Section -->
+  <div class="summary-card">
+    <div class="summary-header">
+      <div>
+        <h1 class="quiz-title">{{ quiz()?.title }}</h1>
+        <p class="attempt-date">
+          Attempted on {{ attempt()?.attemptDate | date:'medium' }}
+        </p>
+      </div>
+      <a routerLink="/my-quizzes" class="back-link">
+        <i class="bi bi-arrow-left"></i> Back to My Quizzes
+      </a>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-box" [class.pass]="(attempt()?.score ?? 0) >= (quiz()?.passingScore ?? 0)" [class.fail]="(attempt()?.score ?? 0) < (quiz()?.passingScore ?? 0)">
+        <span class="stat-label">Your Score</span>
+        <span class="stat-value">{{ attempt()?.score }}%</span>
+      </div>
+      <div class="stat-box neutral">
+        <span class="stat-label">Passing Score</span>
+        <span class="stat-value">{{ quiz()?.passingScore }}%</span>
+      </div>
+      <div class="stat-box neutral">
+        <span class="stat-label">Result</span>
+        <span class="stat-value result-text">
+            {{ (attempt()?.score ?? 0) >= (quiz()?.passingScore ?? 0) ? 'Passed' : 'Failed' }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Questions Review -->
+  <div class="questions-list">
+    <h2 class="section-title">Detailed Review</h2>
+    
+    <div *ngFor="let question of quiz()?.questions; let i = index" class="question-card">
+      <div class="question-header">
+        <span class="question-number">Q{{ i + 1 }}</span>
+        <div class="question-text-container">
+            <h3 class="question-text">{{ question.questionText }}</h3>
+        </div>
+        <span class="status-badge" 
+              [class.correct]="getQuestionStatusClass(question.id) === 'correct'"
+              [class.incorrect]="getQuestionStatusClass(question.id) === 'incorrect'"
+              [class.unanswered]="getQuestionStatusClass(question.id) === 'unanswered'">
+            <i class="bi" 
+               [class.bi-check-circle-fill]="getQuestionStatusClass(question.id) === 'correct'"
+               [class.bi-x-circle-fill]="getQuestionStatusClass(question.id) === 'incorrect'"
+               [class.bi-dash-circle]="getQuestionStatusClass(question.id) === 'unanswered'">
+            </i>
+            {{ getQuestionStatusClass(question.id) | titlecase }}
+        </span>
+      </div>
+
+      <div class="answers-list">
+        <div *ngFor="let answer of question.answers" 
+             class="answer-item"
+             [class.correct-answer]="answer.isCorrect"
+             [class.user-incorrect]="isUserAnswer(question.id, answer.id) && !answer.isCorrect"
+             [class.user-correct]="isUserAnswer(question.id, answer.id) && answer.isCorrect">
+             
+             <div class="answer-indicator">
+                <i class="bi"
+                   [class.bi-check-lg]="isUserAnswer(question.id, answer.id)"
+                   [class.bi-circle]="!isUserAnswer(question.id, answer.id)">
+                </i>
+             </div>
+             
+             <span class="answer-text">{{ answer.answerText }}</span>
+
+             <div class="answer-labels">
+                 <span *ngIf="answer.isCorrect" class="label-correct">Correct Answer</span>
+                 <span *ngIf="isUserAnswer(question.id, answer.id)" class="label-your-choice">Your Answer</span>
+             </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #loadingTpl>
+  <div class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading attempt details...</p>
+  </div>
+</ng-template>

@@ -24,6 +24,7 @@
             <th>Quiz Title</th>
             <th>Date Taken</th>
             <th>Score</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -41,6 +42,9 @@
                 <span class="score-badge" [class.pass]="attempt.score >= 70" [class.fail]="attempt.score < 70">
                   {{ attempt.score }}%
                 </span>
+              </td>
+              <td>
+                <a [routerLink]="['/my-quizzes', attempt.id]" class="view-btn">View Details</a>
               </td>
             </tr>
           }

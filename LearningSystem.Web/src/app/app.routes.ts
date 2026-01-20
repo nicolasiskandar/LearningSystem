@@ -16,6 +16,7 @@ import { QuizTakeComponent } from './quiz-take/quiz-take.component';
 import { MyQuizzesComponent } from './my-quizzes/my-quizzes.component';
 import { AdminQuizzesComponent } from './admin/quizzes/admin-quizzes';
 import { AdminQuestionsComponent } from './admin/questions/admin-questions';
+import { QuizAttemptDetailsComponent } from './my-quizzes/quiz-attempt-details/quiz-attempt-details.component';
 import { CertificateView } from './certificate-view/certificate-view';
 
 export const routes: Routes = [
@@ -29,7 +30,9 @@ export const routes: Routes = [
   { path: 'courses/:id', component: CourseDetails },
   { path: 'quiz/:id', component: QuizTakeComponent },
   { path: 'my-quizzes', component: MyQuizzesComponent },
+  { path: 'my-quizzes/:id', component: QuizAttemptDetailsComponent },
   { path: 'certificates', component: MyCertificatesComponent },
+
   { path: 'certificates/:courseId/view', component: CertificateView },
   { path: 'admin/users', component: AdminUsersComponent },
   { path: 'admin/categories', component: AdminCategoriesComponent },
