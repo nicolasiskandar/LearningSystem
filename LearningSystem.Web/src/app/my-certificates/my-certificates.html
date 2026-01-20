@@ -32,12 +32,12 @@
             </div>
 
             <div class="certificate-actions">
-              <button (click)="downloadCertificate(cert.downloadUrl)" class="btn btn-primary">
-                <i class="bi bi-download"></i> Download Certificate
-              </button>
+              <a [routerLink]="['/certificates', cert.courseId, 'view']" class="btn btn-primary">
+                <i class="bi bi-eye"></i> View & Print
+              </a>
               @if (cert.course) {
                 <button (click)="viewCourse(cert.courseId)" class="btn btn-secondary">
-                  <i class="bi bi-eye"></i> View Course
+                  <i class="bi bi-mortarboard"></i> View Course
                 </button>
               }
             </div>

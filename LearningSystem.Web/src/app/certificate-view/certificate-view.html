@@ -1,0 +1,74 @@
+<div class="certificate-page">
+  @if (loading()) {
+    <div class="loading-container">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p>Preparing your certificate...</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-container">
+      <i class="bi bi-exclamation-triangle"></i>
+      <h3>{{ error() }}</h3>
+      <a routerLink="/courses" class="btn btn-primary">Browse Courses</a>
+    </div>
+  } @else {
+    <div class="certificate-container" id="printable-certificate">
+      <div class="certificate-border">
+        <div class="certificate-inner">
+          <div class="certificate-header">
+            <div class="logo">
+              <i class="bi bi-mortarboard-fill"></i>
+              <span>LearningSystem</span>
+            </div>
+            <h1>CERTIFICATE</h1>
+            <h2>OF COMPLETION</h2>
+          </div>
+
+          <div class="certificate-body">
+            <p class="present-text">This is to certify that</p>
+            <h3 class="user-name">{{ user()?.fullName }}</h3>
+            <p class="completion-text">has successfully completed the online course</p>
+            <h4 class="course-title">{{ course()?.title }}</h4>
+            <div class="course-details">
+              {{ course()?.category }} • {{ course()?.difficulty }} Level
+            </div>
+          </div>
+
+          <div class="certificate-footer">
+            <div class="footer-item">
+              <div class="signature-line"></div>
+              <p>Program Director</p>
+            </div>
+            <div class="certificate-seal">
+              <div class="seal-inner">
+                <i class="bi bi-patch-check-fill"></i>
+                <span>VERIFIED</span>
+              </div>
+            </div>
+            <div class="footer-item">
+              <div class="date-value">{{ getIssueDate() }}</div>
+              <div class="signature-line"></div>
+              <p>Date of Issue</p>
+            </div>
+          </div>
+
+          <div class="certificate-id">
+            Certificate ID: LS-{{ certificate()?.id }}-{{ certificate()?.courseId }}-{{
+              certificate()?.userId
+            }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="no-print-actions no-print">
+      <button class="btn-certificate-action btn-back" routerLink="/certificates">
+        <i class="bi bi-arrow-left"></i> Back to Certificates
+      </button>
+      <button class="btn-certificate-action btn-print" (click)="printCertificate()">
+        <i class="bi bi-printer"></i> Print Certificate
+      </button>
+    </div>
+  }
+</div>

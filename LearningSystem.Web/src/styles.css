@@ -23,7 +23,115 @@
 }
 
 body {
+
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
   background-color: #f9fafb; /* Light background for the whole app */
+
   margin: 0;
+
 }
+
+
+
+@media print {
+
+
+
+  app-header, 
+
+
+
+  app-sidebar,
+
+
+
+  .no-print {
+
+
+
+    display: none !important;
+
+
+
+  }
+
+
+
+
+
+
+
+  .app-layout {
+
+
+
+    display: block !important;
+
+
+
+    margin: 0 !important;
+
+
+
+    padding: 0 !important;
+
+
+
+  }
+
+
+
+
+
+
+
+  .app-main {
+
+
+
+    margin: 0 !important;
+
+
+
+    padding: 0 !important;
+
+
+
+    width: 100% !important;
+
+
+
+    min-height: auto !important;
+
+
+
+    display: block !important;
+
+
+
+  }
+
+
+
+
+
+
+
+  body {
+
+
+
+    background-color: white !important;
+
+
+
+  }
+
+
+
+}
+
+
+
+

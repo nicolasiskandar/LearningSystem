@@ -105,15 +105,14 @@
       <button class="btn btn-enroll" (click)="enroll()" [disabled]="isEnrolling()">
         @if (isEnrolling()) { Enrolling... } @else { Enroll Now }
       </button>
-      } @if (hasCertificate()) {
-      <button
-        class="btn-certificate btn-certificate-secondary"
-        (click)="router.navigate(['/certificates'])"
-      >
-        View Certificate
-      </button>
-      } @if (canGenerateCertificate()) {
-      <button class="btn-certificate" (click)="generateCertificate()">Generate Certificate</button>
+                  } @if (hasCertificate()) {
+                    <a
+                      class="btn-certificate btn-certificate-secondary"
+                      [routerLink]="['/certificates', course()?.id, 'view']"
+                    >
+                      <i class="bi bi-award"></i> View Certificate
+                    </a>
+                  } @if (canGenerateCertificate()) {      <button class="btn-certificate" (click)="generateCertificate()">Generate Certificate</button>
       }
 
       <p class="text-center small text-muted">30-Day Money-Back Guarantee</p>
