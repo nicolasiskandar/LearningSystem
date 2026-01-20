@@ -65,6 +65,15 @@
   font-size: 3rem;
   font-weight: 700;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+@media (max-width: 576px) {
+  .profile-avatar {
+    width: 80px;
+    height: 80px;
+    font-size: 2.5rem;
+  }
 }
 
 .profile-info {
@@ -76,6 +85,12 @@
   font-size: 2rem;
   font-weight: 800;
   color: var(--text-main, #111827);
+}
+
+@media (max-width: 576px) {
+  .profile-name {
+    font-size: 1.5rem;
+  }
 }
 
 .profile-email {
@@ -125,6 +140,13 @@
   transition: all 0.2s;
 }
 
+@media (max-width: 576px) {
+  .tab-btn {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
 .tab-btn:hover {
   color: var(--primary-color, #007bff);
 }
@@ -155,6 +177,12 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 25px;
+}
+
+@media (max-width: 576px) {
+  .course-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .course-card {
@@ -319,10 +347,21 @@
 @media (max-width: 768px) {
   .profile-header {
     flex-direction: column;
+    align-items: center;
     text-align: center;
     padding: 1.5rem;
   }
   
+  .profile-actions {
+    width: 100%;
+    align-items: center;
+  }
+
+  .btn-action {
+    width: 100%;
+    max-width: 250px;
+  }
+
   .profile-meta {
     justify-content: center;
     flex-wrap: wrap;

@@ -7,6 +7,8 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
 .create-btn {
@@ -18,11 +20,17 @@
   cursor: pointer;
 }
 
+.table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .admin-table {
   width: 100%;
   border-collapse: collapse;
   background: white;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  min-width: 800px;
 }
 
 .admin-table th, .admin-table td {
@@ -75,13 +83,14 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  padding: 1rem;
 }
 
 .modal {
   background: white;
   padding: 20px;
   border-radius: 8px;
-  width: 90%;
+  width: 100%;
   max-width: 500px;
   max-height: 90vh;
   overflow-y: auto;
@@ -129,6 +138,13 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 15px;
+}
+
+@media (max-width: 768px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
 }
 
 .checkbox {

@@ -7,11 +7,19 @@
     <button class="create-btn" (click)="openCreateModal()">Create Lesson</button>
   </div>
 
-  @if (isLoading()) {
-    <div class="loading">Loading lessons...</div>
-  } @else {
-    <table class="admin-table">
-      <thead>
+      @if (isLoading()) {
+
+        <div class="loading">Loading lessons...</div>
+
+      } @else {
+
+        <div class="table-responsive">
+
+          <table class="admin-table">
+
+            <thead>
+
+  
         <tr>
           <th>Order</th>
           <th>Title</th>
@@ -38,6 +46,7 @@
         }
       </tbody>
     </table>
+  </div>
   }
 
   <!-- Modal -->

@@ -10,11 +10,19 @@
     <button class="create-btn" (click)="openCreateModal()">Create User</button>
   </div>
 
-  @if (isLoading()) {
-  <div class="loading">Loading users...</div>
-  } @else {
-  <table class="users-table">
-    <thead>
+      @if (isLoading()) {
+
+        <div class="loading">Loading users...</div>
+
+      } @else {
+
+        <div class="users-table-container">
+
+          <table class="users-table">
+
+            <thead>
+
+  
       <tr>
         <th>ID</th>
         <th>Full Name</th>
@@ -36,9 +44,12 @@
         </td>
       </tr>
       }
-    </tbody>
-  </table>
-  } }
+              </tbody>
+            </table>
+          </div>
+        }
+      }
+    
 
   <!-- Modal -->
   @if (showModal()) {

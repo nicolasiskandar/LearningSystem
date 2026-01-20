@@ -282,14 +282,38 @@
 .result-message.fail { color: #dc3545; }
 
 /* Responsive */
-@media (max-width: 600px) {
-  .quiz-info {
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
+@media (max-width: 768px) {
+  .quiz-container {
+    padding: 1rem;
   }
   
+  .card-body {
+    padding: 1.25rem;
+  }
+  
+  .quiz-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding-left: 1rem;
+  }
+
+  .start-screen .actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .start-screen .actions .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
   .answers-list {
     padding-left: 0;
+  }
+  
+  .question-title {
+    font-size: 1rem;
   }
 }

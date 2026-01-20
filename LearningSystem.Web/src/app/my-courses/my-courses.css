@@ -53,9 +53,16 @@
 /* Course Grid - Matching certificate-grid */
 .course-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 25px;
   margin-bottom: 2rem;
+}
+
+@media (max-width: 576px) {
+  .course-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
 }
 
 /* Course Card - Matching certificate-card */

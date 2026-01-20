@@ -9,50 +9,13 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 1rem;
 }
 
-h1 {
-  color: #333;
-}
-
-.create-btn,
-.edit-btn,
-.delete-btn,
-.save-btn,
-.cancel-btn {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: 500;
-}
-
-.create-btn,
-.save-btn {
-  background-color: #007bff;
-  color: white;
-}
-
-.create-btn:hover,
-.save-btn:hover {
-  background-color: #0056b3;
-}
-
-.edit-btn {
-  background-color: #ffc107;
-  color: #333;
-  margin-right: 5px;
-}
-
-.delete-btn {
-  background-color: #dc3545;
-  color: white;
-}
-
-.cancel-btn {
-  background-color: #6c757d;
-  color: white;
-  margin-right: 10px;
+.users-table-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .users-table {
@@ -60,6 +23,7 @@ h1 {
   border-collapse: collapse;
   background-color: white;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  min-width: 700px;
 }
 
 .users-table th,
@@ -99,14 +63,17 @@ h1 {
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  padding: 1rem;
 }
 
 .modal {
   background-color: white;
   border-radius: 5px;
   width: 500px;
-  max-width: 90%;
+  max-width: 100%;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .modal-header {

@@ -12,27 +12,29 @@
     @if (isLoading()) {
       <div class="loading">Loading categories...</div>
     } @else {
-      <table class="admin-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (category of categories(); track category.id) {
+      <div class="table-responsive">
+        <table class="admin-table">
+          <thead>
             <tr>
-              <td>{{ category.id }}</td>
-              <td>{{ category.name }}</td>
-              <td class="actions">
-                <button class="edit-btn" (click)="openEditModal(category)">Edit</button>
-                <button class="delete-btn" (click)="deleteCategory(category)">Delete</button>
-              </td>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Actions</th>
             </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            @for (cat of categories(); track cat.id) {
+              <tr>
+                <td>{{ cat.id }}</td>
+                <td>{{ cat.name }}</td>
+                <td class="actions">
+                  <button class="edit-btn" (click)="openEditModal(cat)">Edit</button>
+                  <button class="delete-btn" (click)="deleteCategory(cat)">Delete</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
     }
   }
 

@@ -30,20 +30,20 @@
         <tbody>
           @for (attempt of attempts(); track attempt.id) {
             <tr>
-              <td class="quiz-title-cell">
+              <td class="quiz-title-cell" data-label="Quiz Title">
                 <span class="quiz-icon"><i class="bi bi-journal-text"></i></span>
                 {{ getQuizTitle(attempt.quizId) }}
               </td>
-              <td>
+              <td data-label="Date Taken">
                 {{ attempt.attemptDate | date: 'mediumDate' }}
                 <span class="time-sub">{{ attempt.attemptDate | date: 'shortTime' }}</span>
               </td>
-              <td>
+              <td data-label="Score">
                 <span class="score-badge" [class.pass]="attempt.score >= 70" [class.fail]="attempt.score < 70">
                   {{ attempt.score }}%
                 </span>
               </td>
-              <td>
+              <td data-label="Actions">
                 <a [routerLink]="['/my-quizzes', attempt.id]" class="view-btn">View Details</a>
               </td>
             </tr>
